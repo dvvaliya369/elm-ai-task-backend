@@ -1,5 +1,8 @@
 import { Request } from "express";
 
+/**
+ * Auth routes interface
+ */
 export interface IAuthBody {
   email: string;
   password: string;
@@ -25,5 +28,39 @@ export interface ISignInRequest extends Request {
 export interface IRefreshTokenRequest extends Request {
   body: {
     refreshToken: string;
+  };
+}
+
+/**
+ * Post routes interface
+ */
+export interface CreatePostRequest extends Request {
+  body: {
+    caption?: string;
+  };
+  file?: Express.Multer.File;
+  user?: {
+    _id: string;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface GetPostsRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+    search?: string;
+    userId?: string;
+    mediaType?: 'image' | 'video';
+    sortBy?: 'newest' | 'oldest' | 'popular';
+    minLikes?: string;
+    hasMedia?: string;
+    days?: string;
+  };
+  user?: {
+    _id: string;
+    email: string;
+    fullName?: string;
   };
 }

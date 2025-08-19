@@ -1,7 +1,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import tokenService from "../service/token.service";
-import { AppError } from "../service/asyncHandler";
+import asyncHandler, { AppError } from "../service/asyncHandler";
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -11,12 +11,8 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-export const authMiddleware = (
-  req: AuthenticatedRequest,
-  _res: Response,
-  next: NextFunction
-) => {
-  try {
+export const authMiddleware = asyncHandler(
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -33,7 +29,5 @@ export const authMiddleware = (
     };
 
     next();
-  } catch (error) {
-    next(error);
   }
-};
+);

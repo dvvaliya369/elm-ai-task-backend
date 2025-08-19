@@ -72,7 +72,7 @@ export const signIn = asyncHandler<ISignInRequest, Response>(
     await user.save();
 
     const userData = {
-      id: user._id,
+      _id: user._id,
       fullName: user.fullName,
       email: user.email,
       profilePhoto: user.profilePhoto,
