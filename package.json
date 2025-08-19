@@ -1,0 +1,35 @@
+{
+  "name": "elm-ai-task-backend",
+  "version": "1.0.0",
+  "description": "Backend for elm-ai-task",
+  "main": "index.js",
+  "repository": "https://github.com/dvvaliya369/elm-ai-task-backend",
+  "author": "dvvaliya369 <dvvaliya369@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf dist && npx tsc",
+    "start": "node dist/index.js",
+    "predev": "npm run build",
+    "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\"",
+    "start:pm2": "pm2 start dist/index.js --name elmBackend"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/node": "^18.16.1",
+    "concurrently": "^8.0.1",
+    "nodemon": "^3.1.10",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.5"
+  }
+}
