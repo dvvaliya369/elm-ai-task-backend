@@ -9,7 +9,7 @@ import {
   commentPost,
   deleteComment,
 } from "../controllers/post.controller";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { authMiddleware, authOptionalMiddleware } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
 import { handleMulterError } from "../middleware/multerError.middleware";
 
@@ -41,7 +41,8 @@ router.use("/comment", authMiddleware);
 router.put("/comment/:id", commentPost);
 router.delete("/comment/:id", deleteComment);
 
+router.use("/list", authOptionalMiddleware);
 router.get("/list", getPosts);
-router.get("/:id", getPostById);
+router.get("/:id", authOptionalMiddleware, getPostById);
 
 export default router;

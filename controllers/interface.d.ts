@@ -52,6 +52,7 @@ export interface UpdatePostRequest extends Request {
   };
   body: {
     caption?: string;
+    isRemoveMedia?: boolean;
   };
   file?: Express.Multer.File;
   user?: {

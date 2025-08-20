@@ -6,7 +6,16 @@ import {
   generateUniqueFileName,
   getMediaType,
 } from "../utils/fileUpload";
-import { CommentPostRequest, CreatePostRequest, DeleteCommentRequest, DeletePostRequest, GetPostByIdRequest, GetPostsRequest, LikePostRequest, UpdatePostRequest } from "./interface";
+import {
+  CommentPostRequest,
+  CreatePostRequest,
+  DeleteCommentRequest,
+  DeletePostRequest,
+  GetPostByIdRequest,
+  GetPostsRequest,
+  LikePostRequest,
+  UpdatePostRequest,
+} from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
 
 // Create post
@@ -63,7 +72,7 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
 export const updatePost = asyncHandler<UpdatePostRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
-    const { caption } = req.body;
+    const { caption, isRemoveMedia } = req.body;
     const file = req.file;
     const user = req.user;
 
@@ -100,6 +109,10 @@ export const updatePost = asyncHandler<UpdatePostRequest, Response>(
         size: file.size,
         mediaType,
       };
+    }
+
+    if (isRemoveMedia) {
+      post.media = undefined;
     }
 
     await post.save();
@@ -199,6 +212,30 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
         $addFields: {
           likesCount: { $size: "$likes" },
           commentsCount: { $size: "$comments" },
+          isLikedByUser: {
+            $cond: {
+              if: {
+                $in: [
+                  new mongoose.Types.ObjectId(req.user?._id),
+                  "$likes.user",
+                ],
+              },
+              then: true,
+              else: false,
+            },
+          },
+          isCommentedByUser: {
+            $cond: {
+              if: {
+                $in: [
+                  new mongoose.Types.ObjectId(req.user?._id),
+                  "$comments.user",
+                ],
+              },
+              then: true,
+              else: false,
+            },
+          },
         },
       },
     ];
@@ -256,6 +293,8 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
         createdAt: 1,
         updatedAt: 1,
         likes: 1,
+        isLikedByUser: 1,
+        isCommentedByUser: 1,
       },
     });
 
@@ -298,19 +337,34 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
 export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
+    console.info(req.user);
 
-    const post = await Post.findById(id)
+    const post: any = await Post.findById(id)
       .populate("user", "firstName lastName profilePhoto")
-      .populate("comments.user", "firstName lastName profilePhoto");
+      .populate("comments.user", "profilePhoto");
 
     if (!post) {
       throw new AppError("Post not found", 404);
+    }
+    
+
+    let data = {
+      ...post._doc,
+      isLikedByUser: false,
+      isCommentedByUser: false,
+      likesCount: post.likes.length,
+      commentsCount: post.comments.length,
+    };
+
+    if (req.user) {
+      data.isLikedByUser = post.isLikedByUserMethod(req.user._id);
+      data.isCommentedByUser = post.isCommentedByUserMethod(req.user._id);
     }
 
     return res.status(200).json({
       success: true,
       message: "Post fetched successfully",
-      data: post,
+      data: data,
     });
   }
 );
@@ -360,6 +414,7 @@ export const commentPost = asyncHandler<CommentPostRequest, Response>(
     return res.status(200).json({
       success: true,
       message: "Comment added successfully",
+      commentId: post.comments[post.comments.length - 1]._id,
     });
   }
 );

@@ -12,7 +12,7 @@ const corsOption: cors.CorsOptions = {
   ],
   credentials: true,
   methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-  origin: envConfig.DOMAIN,
+  origin: [envConfig.DOMAIN, "http://localhost:5173"],
   preflightContinue: false,
 };
 

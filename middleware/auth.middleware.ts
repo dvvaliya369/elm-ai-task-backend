@@ -17,7 +17,7 @@ export const authMiddleware = asyncHandler(
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-      throw new AppError("Access token required", 401);
+      throw new AppError("Unauthorized access", 401);
     }
 
     const decoded = tokenService.verifyAccessToken(token);
@@ -27,6 +27,25 @@ export const authMiddleware = asyncHandler(
       email: decoded.email,
       fullName: decoded.fullName,
     };
+
+    next();
+  }
+);
+
+export const authOptionalMiddleware = asyncHandler(
+  async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (token) {
+      const decoded = tokenService.verifyAccessToken(token);
+
+      req.user = {
+        _id: decoded._id,
+        email: decoded.email,
+        fullName: decoded.fullName,
+      };
+    }
 
     next();
   }

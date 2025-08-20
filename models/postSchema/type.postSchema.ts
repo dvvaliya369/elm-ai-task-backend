@@ -43,7 +43,8 @@ export interface PostDocument extends PostInterface, Document {
   toggleLike(userId: Types.ObjectId, userName: string): Promise<PostDocument>;
   addComment(userId: Types.ObjectId, userName: string, commentText: string): Promise<PostDocument>;
   removeComment(commentId: Types.ObjectId, userId: Types.ObjectId): Promise<PostDocument>;
-  isLikedByUser(userId: Types.ObjectId): boolean;
+  isLikedByUserMethod(userId: Types.ObjectId): boolean;
+  isCommentedByUserMethod(userId: Types.ObjectId): boolean;
   getLikesCount(): number;
   getCommentsCount(): number;
 }

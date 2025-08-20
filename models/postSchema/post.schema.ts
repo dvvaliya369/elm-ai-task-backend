@@ -49,7 +49,7 @@ const postSchema = new Schema<PostDocument>(
     },
     caption: {
       type: String,
-      maxLength: [500, "Caption cannot exceed 500 characters"],
+      maxLength: [1000, "Caption cannot exceed 1000 characters"],
     },
     media: {
       url: {
@@ -149,9 +149,15 @@ postSchema.methods = {
     return await this.save();
   },
 
-  isLikedByUser: function (userId: Types.ObjectId): boolean {
+  isLikedByUserMethod: function (userId: Types.ObjectId): boolean {
     return this.likes.some(
       (like: any) => like.user.toString() === userId.toString()
+    );
+  },
+
+  isCommentedByUserMethod: function (userId: Types.ObjectId): boolean {
+    return this.comments.some(
+      (comment: any) => comment.user.toString() === userId.toString()
     );
   },
 

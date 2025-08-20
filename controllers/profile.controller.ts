@@ -1,9 +1,6 @@
 import { Response } from "express";
 import User from "../models/userSchema/user.schema";
-import {
-  uploadToCloud,
-  generateUniqueFileName,
-} from "../utils/fileUpload";
+import { uploadToCloud, generateUniqueFileName } from "../utils/fileUpload";
 import { UpdateProfileRequest, GetProfileRequest } from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
 
@@ -66,7 +63,9 @@ export const updateProfile = asyncHandler(
 
     await existingUser.save();
 
-    const updatedUser = await User.findById(user._id).select("-password -refreshToken");
+    const updatedUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
 
     return res.status(200).json({
       success: true,
