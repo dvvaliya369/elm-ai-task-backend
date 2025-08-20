@@ -5,6 +5,9 @@ import {
   deletePost,
   getPostById,
   getPosts,
+  likePost,
+  commentPost,
+  deleteComment,
 } from "../controllers/post.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
@@ -30,6 +33,13 @@ router.put(
 
 router.use("/delete", authMiddleware);
 router.delete("/delete/:id", deletePost);
+
+router.use("/like", authMiddleware);
+router.put("/like/:id", likePost);
+
+router.use("/comment", authMiddleware);
+router.put("/comment/:id", commentPost);
+router.delete("/comment/:id", deleteComment);
 
 router.get("/list", getPosts);
 router.get("/:id", getPostById);

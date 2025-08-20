@@ -40,7 +40,33 @@ export interface CreatePostRequest extends Request {
   };
   file?: Express.Multer.File;
   user?: {
-    _id: string;
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface UpdatePostRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    caption?: string;
+  };
+  file?: Express.Multer.File;
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface DeletePostRequest extends Request {
+  params: {
+    id: string;
+  };
+  user?: {
+    _id: ObjectId;
     email: string;
     fullName?: string;
   };
@@ -59,7 +85,57 @@ export interface GetPostsRequest extends Request {
     days?: string;
   };
   user?: {
-    _id: string;
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface GetPostByIdRequest extends Request {
+  params: {
+    id: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface LikePostRequest extends Request {
+  params: {
+    id: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface CommentPostRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    comment: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface DeleteCommentRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    commentId: ObjectId;
+  };
+  user?: {
+    _id: ObjectId;
     email: string;
     fullName?: string;
   };

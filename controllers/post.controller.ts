@@ -6,9 +6,10 @@ import {
   generateUniqueFileName,
   getMediaType,
 } from "../utils/fileUpload";
-import { CreatePostRequest, GetPostsRequest } from "./interface";
+import { CommentPostRequest, CreatePostRequest, DeleteCommentRequest, DeletePostRequest, GetPostByIdRequest, GetPostsRequest, LikePostRequest, UpdatePostRequest } from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
 
+// Create post
 export const createPost = asyncHandler<CreatePostRequest, Response>(
   async (req, res) => {
     const { caption } = req.body;
@@ -58,7 +59,8 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
   }
 );
 
-export const updatePost = asyncHandler<CreatePostRequest, Response>(
+// Update post
+export const updatePost = asyncHandler<UpdatePostRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
     const { caption } = req.body;
@@ -111,7 +113,8 @@ export const updatePost = asyncHandler<CreatePostRequest, Response>(
   }
 );
 
-export const deletePost = asyncHandler<CreatePostRequest, Response>(
+// Delete post
+export const deletePost = asyncHandler<DeletePostRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
     const user = req.user;
@@ -139,6 +142,7 @@ export const deletePost = asyncHandler<CreatePostRequest, Response>(
   }
 );
 
+// Get posts
 export const getPosts = asyncHandler<GetPostsRequest, Response>(
   async (req, res) => {
     const {
@@ -290,7 +294,8 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
   }
 );
 
-export const getPostById = asyncHandler<GetPostsRequest, Response>(
+// Get post by id
+export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
 
@@ -306,6 +311,80 @@ export const getPostById = asyncHandler<GetPostsRequest, Response>(
       success: true,
       message: "Post fetched successfully",
       data: post,
+    });
+  }
+);
+
+// Like post
+export const likePost = asyncHandler<LikePostRequest, Response>(
+  async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError("User not authenticated", 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    await post.toggleLike(user._id, user.fullName || "");
+
+    return res.status(200).json({
+      success: true,
+      message: "Post liked successfully",
+    });
+  }
+);
+
+// Comment post
+export const commentPost = asyncHandler<CommentPostRequest, Response>(
+  async (req, res) => {
+    const { id } = req.params;
+    const { comment } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError("User not authenticated", 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    await post.addComment(user._id, user.fullName || "", comment);
+
+    return res.status(200).json({
+      success: true,
+      message: "Comment added successfully",
+    });
+  }
+);
+
+// Delete comment
+export const deleteComment = asyncHandler<DeleteCommentRequest, Response>(
+  async (req, res) => {
+    const { id } = req.params;
+    const { commentId } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError("User not authenticated", 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    await post.removeComment(commentId, user._id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully",
     });
   }
 );
