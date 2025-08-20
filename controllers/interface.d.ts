@@ -140,3 +140,30 @@ export interface DeleteCommentRequest extends Request {
     fullName?: string;
   };
 }
+
+/**
+ * Profile routes interface
+ */
+export interface UpdateProfileRequest extends Request {
+  body: {
+    firstName?: string;
+    lastName?: string;
+  };
+  file?: Express.Multer.File;
+  user?: {
+    _id: string;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface GetProfileRequest extends Request {
+  params?: {
+    id?: string;
+  };
+  user?: {
+    _id: string;
+    email: string;
+    fullName?: string;
+  };
+}
