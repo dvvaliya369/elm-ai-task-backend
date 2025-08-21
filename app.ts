@@ -3,14 +3,15 @@ dotenv.config();
 import cors from "cors";
 import "./config/env.config";
 import "./config/db.config";
+import "./config/redis.config";
 import express from "express";
-const app = express();
-
 import corsOption from "./config/cors.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
 
+
+const app = express();
 // Middleware
 app.use(cors(corsOption));
 app.use(express.json());

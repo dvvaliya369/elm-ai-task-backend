@@ -3,6 +3,7 @@ import User from "../models/userSchema/user.schema";
 import { uploadToCloud, generateUniqueFileName } from "../utils/fileUpload";
 import { UpdateProfileRequest, GetProfileRequest } from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
+import cacheService from "../service/cache.service";
 
 export const getProfile = asyncHandler(
   async (req: GetProfileRequest, res: Response) => {
@@ -15,11 +16,24 @@ export const getProfile = asyncHandler(
       throw new AppError("User ID is required", 400);
     }
 
+    const cacheKey = cacheService.generateProfileKey(userId);
+
+    const cachedProfile = await cacheService.get(cacheKey);
+    if (cachedProfile) {
+      return res.status(200).json({
+        success: true,
+        message: "Profile fetched successfully (cached)",
+        data: cachedProfile,
+      });
+    }
+
     const user = await User.findById(userId).select("-password -refreshToken");
 
     if (!user) {
       throw new AppError("User not found", 404);
     }
+
+    await cacheService.set(cacheKey, user, 3600);
 
     return res.status(200).json({
       success: true,
@@ -63,9 +77,14 @@ export const updateProfile = asyncHandler(
 
     await existingUser.save();
 
+    const cacheKey = cacheService.generateProfileKey(user._id);
+    await cacheService.delete(cacheKey);
+
     const updatedUser = await User.findById(user._id).select(
       "-password -refreshToken"
     );
+
+    await cacheService.set(cacheKey, updatedUser, 3600);
 
     return res.status(200).json({
       success: true,
