@@ -1,4 +1,12 @@
 import * as redis from "redis";
+// import envConfig from "./env.config";
+
+// {
+//   url: envConfig.REDIS_URL,
+//   socket: {
+//     tls: true,
+//   },
+// }
 
 const redisClient = redis.createClient();
 

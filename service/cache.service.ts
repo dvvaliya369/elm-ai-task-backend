@@ -13,7 +13,11 @@ class CacheService {
     }
   }
 
-  async set(key: string, data: unknown, ttl: number = this.DEFAULT_TTL): Promise<boolean> {
+  async set(
+    key: string,
+    data: unknown,
+    ttl: number = this.DEFAULT_TTL
+  ): Promise<boolean> {
     try {
       await redisClient.setEx(key, ttl, JSON.stringify(data));
       return true;
@@ -62,6 +66,22 @@ class CacheService {
 
   generateUserPattern(userId: string): string {
     return `*:${userId}*`;
+  }
+
+  generatePostKey(postId: string): string {
+    return `post:${postId}`;
+  }
+
+  generateUserPostsKey(userId: string): string {
+    return `user_posts:${userId}`;
+  }
+
+  generatePostPattern(postId: string): string {
+    return `*post*:${postId}*`;
+  }
+
+  generateUserPostsPattern(userId: string): string {
+    return `*user_posts*:${userId}*`;
   }
 }
 

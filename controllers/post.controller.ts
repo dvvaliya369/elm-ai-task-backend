@@ -18,6 +18,7 @@ import {
   UpdatePostRequest,
 } from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
+import cacheService from "../service/cache.service";
 
 // Create post
 export const createPost = asyncHandler<CreatePostRequest, Response>(
@@ -45,7 +46,7 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
     }
 
     if (file) {
-      const mediaUrl = await uploadToCloud(file, 'posts');
+      const mediaUrl = await uploadToCloud(file, "posts");
       const uniqueFileName = generateUniqueFileName(file.originalname);
       const mediaType = getMediaType(file);
 
@@ -60,6 +61,9 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
 
     const newPost = await Post.create(postData);
     await newPost.populate("user", "firstName lastName email");
+
+    const userPostsCacheKey = cacheService.generateUserPostsKey(user._id);
+    await cacheService.delete(userPostsCacheKey);
 
     return res.status(201).json({
       success: true,
@@ -99,7 +103,7 @@ export const updatePost = asyncHandler<UpdatePostRequest, Response>(
     }
 
     if (file) {
-      const mediaUrl = await uploadToCloud(file, 'posts');
+      const mediaUrl = await uploadToCloud(file, "posts");
       const uniqueFileName = generateUniqueFileName(file.originalname);
       const mediaType = getMediaType(file);
 
@@ -118,6 +122,13 @@ export const updatePost = asyncHandler<UpdatePostRequest, Response>(
 
     await post.save();
     await post.populate("user", "firstName lastName email");
+
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsCacheKey = cacheService.generateUserPostsKey(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.delete(userPostsCacheKey);
 
     return res.status(200).json({
       success: true,
@@ -148,6 +159,13 @@ export const deletePost = asyncHandler<DeletePostRequest, Response>(
 
     post.isDeleted = true;
     await post.save();
+
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsCacheKey = cacheService.generateUserPostsKey(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.delete(userPostsCacheKey);
 
     return res.status(200).json({
       success: true,
@@ -338,6 +356,34 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
 export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
+    const userId = req.user?._id;
+
+    const cacheKey = cacheService.generatePostKey(id);
+    const cachedPost: any = await cacheService.get(cacheKey);
+
+    if (cachedPost) {
+      let data: any = { ...cachedPost };
+
+      if (userId) {
+        data.isLikedByUser =
+          cachedPost.likes?.some(
+            (like: any) => like.user.toString() === userId
+          ) || false;
+        data.isCommentedByUser =
+          cachedPost.comments?.some(
+            (comment: any) => comment.user.toString() === userId
+          ) || false;
+      } else {
+        data.isLikedByUser = false;
+        data.isCommentedByUser = false;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Post fetched successfully (cached)",
+        data: data,
+      });
+    }
 
     const post: any = await Post.findById(id)
       .populate("user", "firstName lastName profilePhoto")
@@ -346,7 +392,6 @@ export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
     if (!post) {
       throw new AppError("Post not found", 404);
     }
-    
 
     let data = {
       ...post._doc,
@@ -360,6 +405,8 @@ export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
       data.isLikedByUser = post.isLikedByUserMethod(req.user._id);
       data.isCommentedByUser = post.isCommentedByUserMethod(req.user._id);
     }
+
+    await cacheService.set(cacheKey, data, 1800);
 
     return res.status(200).json({
       success: true,
@@ -386,6 +433,13 @@ export const likePost = asyncHandler<LikePostRequest, Response>(
 
     await post.toggleLike(user._id, user.fullName || "");
 
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsCacheKey = cacheService.generateUserPostsKey(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.delete(userPostsCacheKey);
+
     return res.status(200).json({
       success: true,
       message: "Post liked successfully",
@@ -410,6 +464,13 @@ export const commentPost = asyncHandler<CommentPostRequest, Response>(
     }
 
     await post.addComment(user._id, user.fullName || "", comment);
+
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsCacheKey = cacheService.generateUserPostsKey(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.delete(userPostsCacheKey);
 
     return res.status(200).json({
       success: true,
@@ -437,6 +498,13 @@ export const deleteComment = asyncHandler<DeleteCommentRequest, Response>(
 
     await post.removeComment(commentId, user._id);
 
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsCacheKey = cacheService.generateUserPostsKey(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.delete(userPostsCacheKey);
+
     return res.status(200).json({
       success: true,
       message: "Comment deleted successfully",
@@ -453,21 +521,34 @@ export const getPostByUserId = asyncHandler<GetPostByUserIdRequest, Response>(
       throw new AppError("User ID is required", 400);
     }
 
-    const post = await Post.find({
+    const cacheKey = cacheService.generateUserPostsKey(id);
+    const cachedPosts = await cacheService.get(cacheKey);
+
+    if (cachedPosts) {
+      return res.status(200).json({
+        success: true,
+        message: "Posts fetched successfully (cached)",
+        data: cachedPosts,
+      });
+    }
+
+    const posts = await Post.find({
       user: id,
       isDeleted: false,
     })
       .populate("user", "firstName lastName profilePhoto")
       .populate("comments.user", "profilePhoto");
 
-    if (!post) {
-      throw new AppError("Post not found", 404);
+    if (!posts) {
+      throw new AppError("Posts not found", 404);
     }
+
+    await cacheService.set(cacheKey, posts, 1800);
 
     return res.status(200).json({
       success: true,
-      message: "Post fetched successfully",
-      data: post,
+      message: "Posts fetched successfully",
+      data: posts,
     });
   }
 );

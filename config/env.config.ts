@@ -10,4 +10,6 @@ export default {
 
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
+
+  // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };
