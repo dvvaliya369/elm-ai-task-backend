@@ -44,7 +44,7 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
     }
 
     if (file) {
-      const mediaUrl = await uploadToCloud(file);
+      const mediaUrl = await uploadToCloud(file, 'posts');
       const uniqueFileName = generateUniqueFileName(file.originalname);
       const mediaType = getMediaType(file);
 
@@ -98,7 +98,7 @@ export const updatePost = asyncHandler<UpdatePostRequest, Response>(
     }
 
     if (file) {
-      const mediaUrl = await uploadToCloud(file);
+      const mediaUrl = await uploadToCloud(file, 'posts');
       const uniqueFileName = generateUniqueFileName(file.originalname);
       const mediaType = getMediaType(file);
 
@@ -337,7 +337,6 @@ export const getPosts = asyncHandler<GetPostsRequest, Response>(
 export const getPostById = asyncHandler<GetPostByIdRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
-    console.info(req.user);
 
     const post: any = await Post.findById(id)
       .populate("user", "firstName lastName profilePhoto")

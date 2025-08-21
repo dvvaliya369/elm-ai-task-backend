@@ -7,4 +7,7 @@ export default {
   JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY,
   DB_URL: process.env.DB_URL,
   DOMAIN: process.env.DOMAIN as string,
+
+  GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
+  GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 };

@@ -48,7 +48,7 @@ export const updateProfile = asyncHandler(
     if (lastName) existingUser.lastName = lastName;
 
     if (file) {
-      const photoUrl = await uploadToCloud(file);
+      const photoUrl = await uploadToCloud(file, 'profiles');
       const uniqueFileName = generateUniqueFileName(file.originalname);
 
       existingUser.profilePhoto = {

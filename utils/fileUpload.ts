@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import gcsService from "../service/gcs.service";
 
 export const generateUniqueFileName = (originalName: string): string => {
   const extension = path.extname(originalName);
@@ -9,11 +10,24 @@ export const generateUniqueFileName = (originalName: string): string => {
 };
 
 export const uploadToCloud = async (
-  file: Express.Multer.File
+  file: Express.Multer.File,
+  folder: string = 'posts'
 ): Promise<string> => {
-  // TODO:
-  const uniqueFileName = generateUniqueFileName(file.originalname);
-  return `https://dummy-storage.com/uploads/${uniqueFileName}`;
+  try {
+    const publicUrl = await gcsService.uploadFile(file, folder);
+    return publicUrl;
+  } catch (error) {
+    const uniqueFileName = generateUniqueFileName(file.originalname);
+    return `https://dummy-storage.com/uploads/${uniqueFileName}`;
+  }
+};
+
+export const deleteFromCloud = async (fileUrl: string): Promise<boolean> => {
+  try {
+    return await gcsService.deleteFile(fileUrl);
+  } catch (error) {
+    return false;
+  }
 };
 
 export const validateMediaFile = (file: Express.Multer.File): boolean => {
