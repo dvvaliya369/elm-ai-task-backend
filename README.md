@@ -67,7 +67,7 @@ cd elm-ai-task-backend
 
 2. **Install dependencies**
 ```bash
-npm install
+yarn install
 ```
 
 3. **Environment Configuration**
@@ -93,11 +93,11 @@ GCS_BUCKET_NAME=user_post
 5. **Start the server**
 ```bash
 # Development
-npm run dev
+yarn run dev
 
 # Production
-npm run build
-npm start
+yarn run build
+yarn start
 ```
 
 ## 📚 API Documentation
