@@ -168,3 +168,17 @@ export interface GetProfileRequest extends Request {
     fullName?: string;
   };
 }
+
+export interface GetPostByUserIdRequest extends Request {
+  query: {
+    userId?: string;
+  };
+  params: {
+    id: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}

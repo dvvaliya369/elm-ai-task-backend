@@ -12,6 +12,7 @@ import {
   DeleteCommentRequest,
   DeletePostRequest,
   GetPostByIdRequest,
+  GetPostByUserIdRequest,
   GetPostsRequest,
   LikePostRequest,
   UpdatePostRequest,
@@ -439,6 +440,34 @@ export const deleteComment = asyncHandler<DeleteCommentRequest, Response>(
     return res.status(200).json({
       success: true,
       message: "Comment deleted successfully",
+    });
+  }
+);
+
+// Get post by user id
+export const getPostByUserId = asyncHandler<GetPostByUserIdRequest, Response>(
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+      throw new AppError("User ID is required", 400);
+    }
+
+    const post = await Post.find({
+      user: id,
+      isDeleted: false,
+    })
+      .populate("user", "firstName lastName profilePhoto")
+      .populate("comments.user", "profilePhoto");
+
+    if (!post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Post fetched successfully",
+      data: post,
     });
   }
 );

@@ -8,6 +8,7 @@ import {
   likePost,
   commentPost,
   deleteComment,
+  getPostByUserId,
 } from "../controllers/post.controller";
 import { authMiddleware, authOptionalMiddleware } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
@@ -44,5 +45,7 @@ router.delete("/comment/:id", deleteComment);
 router.use("/list", authOptionalMiddleware);
 router.get("/list", getPosts);
 router.get("/:id", authOptionalMiddleware, getPostById);
+
+router.get("/user/:id", authOptionalMiddleware, getPostByUserId);
 
 export default router;
