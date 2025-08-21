@@ -9,6 +9,7 @@ A comprehensive social media backend API built with Node.js, Express, TypeScript
 - **File Uploads** - Google Cloud Storage integration for images/videos
 - **Social Features** - Like, comment, and delete interactions
 - **Profile Management** - User profile updates with photo uploads
+- **Redis Caching** - Fast data retrieval for posts and profiles
 - **Advanced Filtering** - Search, pagination, and sorting capabilities
 - **Type Safety** - Full TypeScript implementation
 
@@ -18,6 +19,7 @@ A comprehensive social media backend API built with Node.js, Express, TypeScript
 elm-ai-task-backend/
 ├── config/
 │   ├── db.config.ts          # MongoDB connection configuration
+│   ├── redis.config.ts       # Redis connection configuration
 │   └── env.config.ts         # Environment variables configuration
 ├── controllers/
 │   ├── auth.controller.ts    # Authentication endpoints
@@ -41,6 +43,7 @@ elm-ai-task-backend/
 │   └── profile.route.ts      # Profile management routes
 ├── service/
 │   ├── asyncHandler.ts       # Async error handling utility
+│   ├── cache.service.ts      # Redis caching service
 │   ├── gcs.service.ts        # Google Cloud Storage service
 │   └── token.service.ts      # JWT token utilities
 ├── utils/
@@ -55,6 +58,7 @@ elm-ai-task-backend/
 ### Prerequisites
 - Node.js (v16 or higher)
 - MongoDB
+- Redis
 - Google Cloud Storage account
 
 ### Setup
@@ -80,6 +84,7 @@ JWT_EXPIRY=15m
 JWT_REFRESH_SECRET=your-refresh-secret
 JWT_REFRESH_EXPIRY=7d
 DB_URL=mongodb://localhost:27017/elm-ai-task
+REDIS_URL=redis://localhost:6379
 DOMAIN=http://localhost:8000
 
 GCS_PROJECT_ID=elm-ai-469623
@@ -241,6 +246,7 @@ Form Data:
 
 - **Backend Framework**: Express.js with TypeScript
 - **Database**: MongoDB with Mongoose ODM
+- **Caching**: Redis for fast data retrieval
 - **Authentication**: JWT (JSON Web Tokens)
 - **File Upload**: Multer + Google Cloud Storage
 - **Validation**: Custom middleware and schema validation
@@ -269,4 +275,26 @@ Form Data:
 - Like and comment functionality
 - Soft delete implementation
 - User interaction tracking (isLikedByUser, isCommentedByUser)
+
+### 🚀 Redis Caching System
+- **Fast Data Access**: Cached data loads instantly without database queries
+- **Smart Caching**: Profiles cached for 1 hour, posts cached for 30 minutes
+- **Auto Refresh**: Cache updates automatically when data changes
+- **Memory Efficient**: Only frequently accessed data is cached
+
+#### 📦 What Gets Cached:
+- **User Profiles**: Individual user profile data
+- **Individual Posts**: Single post details with likes and comments
+- **User Posts**: All posts by a specific user
+
+#### 🔑 Cache Keys:
+- `profile:userId` - User profile data
+- `post:postId` - Individual post data
+- `user_posts:userId` - All posts by a user
+
+#### 🔄 Cache Updates:
+- **Profile Changes**: Cache clears when profile is updated
+- **Post Changes**: Cache clears when posts are created, updated, or deleted
+- **Interactions**: Cache clears when posts are liked or commented on
+- **Automatic**: Old cache expires automatically after set time
 
