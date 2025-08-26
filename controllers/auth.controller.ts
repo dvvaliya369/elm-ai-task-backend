@@ -11,6 +11,7 @@ import {
   ISignUpRequest,
   ISignInRequest,
   IRefreshTokenRequest,
+  IChangePasswordRequest,
 } from "./interface";
 import tokenService, { TokenPayload } from "../service/token.service";
 
@@ -124,6 +125,43 @@ export const refreshToken = asyncHandler<IRefreshTokenRequest, Response>(
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
+    });
+  }
+);
+
+export const changePassword = asyncHandler<IChangePasswordRequest, Response>(
+  async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError("User not authenticated", 401);
+    }
+
+    if (!oldPassword || !newPassword) {
+      throw new AppError("Old password and new password are required", 400);
+    }
+
+    if (newPassword.length < 4) {
+      throw new AppError("New password must be at least 4 characters long", 400);
+    }
+
+    const userDoc = await User.findById(user._id);
+    if (!userDoc) {
+      throw new AppError("User not found", 404);
+    }
+
+    const isOldPasswordValid = await userDoc.comparePassword(oldPassword);
+    if (!isOldPasswordValid) {
+      throw new AppError("Current password is incorrect", 400);
+    }
+
+    userDoc.password = newPassword;
+    await userDoc.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
     });
   }
 );
