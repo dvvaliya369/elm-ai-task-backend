@@ -31,6 +31,18 @@ export interface IRefreshTokenRequest extends Request {
   };
 }
 
+export interface IChangePasswordRequest extends Request {
+  body: {
+    oldPassword: string;
+    newPassword: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
 /**
  * Post routes interface
  */
