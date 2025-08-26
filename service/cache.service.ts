@@ -81,7 +81,7 @@ class CacheService {
   }
 
   generateUserPostsPattern(userId: string): string {
-    return `*user_posts*:${userId}*`;
+    return `user_posts:${userId}*`;
   }
 }
 

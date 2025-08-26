@@ -169,9 +169,23 @@ export interface GetProfileRequest extends Request {
   };
 }
 
+export type FilterOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
+export type SortOrder = 'asc' | 'desc';
+
+export interface FilterItem {
+  field: 'likesCount' | 'commentsCount' | 'caption';
+  operator: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'contains' | 'doesNotContain' | 'startsWith' | 'endsWith' | 'equals' | 'doesNotEqual';
+  value: number | string;
+}
+
 export interface GetPostByUserIdRequest extends Request {
   query: {
     userId?: string;
+    page?: string;
+    limit?: string;
+    sortBy?: string;
+    sortOrder?: SortOrder;
+    filters?: string; // JSON string of FilterItem[]
   };
   params: {
     id: string;

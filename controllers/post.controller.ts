@@ -16,9 +16,11 @@ import {
   GetPostsRequest,
   LikePostRequest,
   UpdatePostRequest,
+
 } from "./interface";
 import asyncHandler, { AppError } from "../service/asyncHandler";
 import cacheService from "../service/cache.service";
+import { parseFilters, buildFilterPipeline, validateFilters } from "../utils/filterBuilder";
 
 // Create post
 export const createPost = asyncHandler<CreatePostRequest, Response>(
@@ -62,8 +64,8 @@ export const createPost = asyncHandler<CreatePostRequest, Response>(
     const newPost = await Post.create(postData);
     await newPost.populate("user", "firstName lastName email");
 
-    const userPostsCacheKey = cacheService.generateUserPostsKey(user._id);
-    await cacheService.delete(userPostsCacheKey);
+    const userPostsPattern = cacheService.generateUserPostsPattern(user._id);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(201).json({
       success: true,
@@ -124,11 +126,11 @@ export const updatePost = asyncHandler<UpdatePostRequest, Response>(
     await post.populate("user", "firstName lastName email");
 
     const postCacheKey = cacheService.generatePostKey(id);
-    const userPostsCacheKey = cacheService.generateUserPostsKey(
+    const userPostsPattern = cacheService.generateUserPostsPattern(
       post.user.toString()
     );
     await cacheService.delete(postCacheKey);
-    await cacheService.delete(userPostsCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(200).json({
       success: true,
@@ -161,11 +163,11 @@ export const deletePost = asyncHandler<DeletePostRequest, Response>(
     await post.save();
 
     const postCacheKey = cacheService.generatePostKey(id);
-    const userPostsCacheKey = cacheService.generateUserPostsKey(
+    const userPostsPattern = cacheService.generateUserPostsPattern(
       post.user.toString()
     );
     await cacheService.delete(postCacheKey);
-    await cacheService.delete(userPostsCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(200).json({
       success: true,
@@ -434,11 +436,11 @@ export const likePost = asyncHandler<LikePostRequest, Response>(
     await post.toggleLike(user._id, user.fullName || "");
 
     const postCacheKey = cacheService.generatePostKey(id);
-    const userPostsCacheKey = cacheService.generateUserPostsKey(
+    const userPostsPattern = cacheService.generateUserPostsPattern(
       post.user.toString()
     );
     await cacheService.delete(postCacheKey);
-    await cacheService.delete(userPostsCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(200).json({
       success: true,
@@ -466,11 +468,11 @@ export const commentPost = asyncHandler<CommentPostRequest, Response>(
     await post.addComment(user._id, user.fullName || "", comment);
 
     const postCacheKey = cacheService.generatePostKey(id);
-    const userPostsCacheKey = cacheService.generateUserPostsKey(
+    const userPostsPattern = cacheService.generateUserPostsPattern(
       post.user.toString()
     );
     await cacheService.delete(postCacheKey);
-    await cacheService.delete(userPostsCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(200).json({
       success: true,
@@ -499,11 +501,11 @@ export const deleteComment = asyncHandler<DeleteCommentRequest, Response>(
     await post.removeComment(commentId, user._id);
 
     const postCacheKey = cacheService.generatePostKey(id);
-    const userPostsCacheKey = cacheService.generateUserPostsKey(
+    const userPostsPattern = cacheService.generateUserPostsPattern(
       post.user.toString()
     );
     await cacheService.delete(postCacheKey);
-    await cacheService.delete(userPostsCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
 
     return res.status(200).json({
       success: true,
@@ -512,43 +514,116 @@ export const deleteComment = asyncHandler<DeleteCommentRequest, Response>(
   }
 );
 
-// Get post by user id
+// Get posts by user id
 export const getPostByUserId = asyncHandler<GetPostByUserIdRequest, Response>(
   async (req, res) => {
     const { id } = req.params;
+    const {
+      page = "1",
+      limit = "5",
+      sortBy = "createdAt",
+      sortOrder = "desc",
+      filters,
+    } = req.query;
 
     if (!id) {
       throw new AppError("User ID is required", 400);
     }
 
-    const cacheKey = cacheService.generateUserPostsKey(id);
-    const cachedPosts = await cacheService.get(cacheKey);
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
 
-    if (cachedPosts) {
-      return res.status(200).json({
-        success: true,
-        message: "Posts fetched successfully (cached)",
-        data: cachedPosts,
-      });
-    }
+    const parsedFilters = parseFilters(filters);
+    validateFilters(parsedFilters);
 
-    const posts = await Post.find({
-      user: id,
-      isDeleted: false,
-    })
-      .populate("user", "firstName lastName profilePhoto")
-      .populate("comments.user", "profilePhoto");
+    const initialQuery: any = {
+      user: new mongoose.Types.ObjectId(id),
+      isDeleted: { $ne: true }
+    };
 
-    if (!posts) {
-      throw new AppError("Posts not found", 404);
-    }
+    const pipeline: any[] = [
+      { $match: initialQuery },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $addFields: {
+          likesCount: { $size: "$likes" },
+          commentsCount: { $size: "$comments" },
+        },
+      },
+    ];
 
-    await cacheService.set(cacheKey, posts, 1800);
+    const filterStages = buildFilterPipeline(parsedFilters);
+    pipeline.push(...filterStages);
 
+    const countPipeline = [...pipeline, { $count: "total" }];
+
+    const sortObj: any = {
+      createdAt: sortOrder === "asc" ? 1 : -1
+    };
+
+    pipeline.push({ $sort: sortObj });
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limitNum });
+
+    pipeline.push({
+      $project: {
+        _id: 1,
+        user: {
+          _id: "$user._id",
+          firstName: "$user.firstName",
+          lastName: "$user.lastName",
+          profilePhoto: "$user.profilePhoto",
+        },
+        caption: 1,
+        media: 1,
+        likesCount: 1,
+        commentsCount: 1,
+        isDeleted: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        __v: 1,
+      },
+    });
+
+    const [posts, countResult] = await Promise.all([
+      Post.aggregate(pipeline),
+      Post.aggregate(countPipeline),
+    ]);
+
+    const totalCount = countResult.length > 0 ? countResult[0].total : 0;
+    const totalPages = Math.ceil(totalCount / limitNum);
+    const hasNextPage = pageNum < totalPages;
+    const hasPrevPage = pageNum > 1;
+
+    const responseData = {
+      posts,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalPosts: totalCount,
+        hasNextPage,
+        hasPrevPage,
+        limit: limitNum,
+      },
+      filters: {
+        sortBy,
+        sortOrder,
+        appliedFilters: parsedFilters,
+      },
+    };
     return res.status(200).json({
       success: true,
       message: "Posts fetched successfully",
-      data: posts,
+      data: responseData,
     });
   }
 );
