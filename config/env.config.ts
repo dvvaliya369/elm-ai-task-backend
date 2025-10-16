@@ -11,5 +11,13 @@ export default {
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 
-  // REDIS_URL: process.env.REDIS_URL // for redis cloud
+  // Redis Configuration
+  REDIS_URL: process.env.REDIS_URL,
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
+  REDIS_PORT: parseInt(process.env.REDIS_PORT || "6379"),
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+  REDIS_DB: parseInt(process.env.REDIS_DB || "0"),
+  REDIS_ENABLE_TLS: process.env.REDIS_ENABLE_TLS === "true",
+  REDIS_MAX_RETRIES: parseInt(process.env.REDIS_MAX_RETRIES || "3"),
+  REDIS_RETRY_DELAY_MS: parseInt(process.env.REDIS_RETRY_DELAY_MS || "5000")
 };

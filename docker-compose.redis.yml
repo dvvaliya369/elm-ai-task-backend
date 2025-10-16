@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: elm-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - app-network
+
+  # Optional: Redis Commander (Web UI for Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: elm-redis-commander
+    hostname: redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - app-network
+    profiles:
+      - tools
+
+volumes:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge

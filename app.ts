@@ -9,6 +9,7 @@ import corsOption from "./config/cors.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
+import Health from "./routes/health.route";
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(`/api/auth`, Auth);
 app.use(`/api/post`, Post);
 app.use(`/api/profile`, Profile);
+app.use(`/api/health`, Health);
 
 // default route
 app.get("/", (_req, res) => {
