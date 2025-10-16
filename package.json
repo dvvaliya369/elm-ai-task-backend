@@ -11,7 +11,12 @@
     "start": "node dist/index.js",
     "predev": "npm run build",
     "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\"",
-    "start:pm2": "pm2 start dist/index.js --name elmBackend"
+    "start:pm2": "pm2 start dist/index.js --name elmBackend",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -21,8 +26,16 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^18.16.1",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "concurrently": "^8.0.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4"
   },
@@ -37,5 +50,14 @@
     "multer": "^2.0.2",
     "redis": "^5.8.2",
     "uuid": "^11.1.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,json,md}": [
+      "prettier --write"
+    ]
   }
 }

@@ -208,3 +208,52 @@ export interface GetPostByUserIdRequest extends Request {
     fullName?: string;
   };
 }
+
+/**
+ * Favorite routes interface
+ */
+export interface AddFavoriteRequest extends Request {
+  params: {
+    postId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface RemoveFavoriteRequest extends Request {
+  params: {
+    postId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface GetFavoritesRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+    sortBy?: 'newest' | 'oldest';
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface CheckFavoriteRequest extends Request {
+  params: {
+    postId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}

@@ -1,0 +1,44 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-var-requires": "error",
+    "no-console": "off",
+    "no-debugger": "error",
+    "prefer-const": "error",
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "eqeqeq": ["error", "always"],
+    "curly": "off",
+    "no-trailing-spaces": "error",
+    "eol-last": ["error", "always"],
+    "prettier/prettier": "off"
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    ".git/",
+    "*.js",
+    "*.d.ts",
+    "coverage/"
+  ],
+  "env": {
+    "node": true,
+    "es2020": true
+  }
+}

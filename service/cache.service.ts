@@ -83,6 +83,14 @@ class CacheService {
   generateUserPostsPattern(userId: string): string {
     return `user_posts:${userId}*`;
   }
+
+  generateUserFavoritesKey(userId: string, page: number = 1, limit: number = 10, sortBy: string = "newest"): string {
+    return `user_favorites:${userId}:${page}:${limit}:${sortBy}`;
+  }
+
+  generateUserFavoritesPattern(userId: string): string {
+    return `user_favorites:${userId}*`;
+  }
 }
 
 export default new CacheService();
