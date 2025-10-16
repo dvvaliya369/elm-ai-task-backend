@@ -91,8 +91,8 @@ export interface GetPostsRequest extends Request {
     limit?: string;
     search?: string;
     userId?: string;
-    mediaType?: 'image' | 'video';
-    sortBy?: 'newest' | 'oldest' | 'popular';
+    mediaType?: "image" | "video";
+    sortBy?: "newest" | "oldest" | "popular";
     minLikes?: string;
     hasMedia?: string;
     days?: string;
@@ -181,12 +181,24 @@ export interface GetProfileRequest extends Request {
   };
 }
 
-export type FilterOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
-export type SortOrder = 'asc' | 'desc';
+export type FilterOperator = "gt" | "gte" | "lt" | "lte" | "eq" | "ne";
+export type SortOrder = "asc" | "desc";
 
 export interface FilterItem {
-  field: 'likesCount' | 'commentsCount' | 'caption';
-  operator: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'contains' | 'doesNotContain' | 'startsWith' | 'endsWith' | 'equals' | 'doesNotEqual';
+  field: "likesCount" | "commentsCount" | "caption";
+  operator:
+    | "="
+    | "!="
+    | ">"
+    | ">="
+    | "<"
+    | "<="
+    | "contains"
+    | "doesNotContain"
+    | "startsWith"
+    | "endsWith"
+    | "equals"
+    | "doesNotEqual";
   value: number | string;
 }
 
@@ -201,6 +213,41 @@ export interface GetPostByUserIdRequest extends Request {
   };
   params: {
     id: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface SavePostToProfileRequest extends Request {
+  params: {
+    postId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface RemovePostFromProfileRequest extends Request {
+  params: {
+    postId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface GetSavedPostsRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+    sortBy?: "newest" | "oldest";
   };
   user?: {
     _id: ObjectId;
@@ -238,7 +285,7 @@ export interface GetFavoritesRequest extends Request {
   query: {
     page?: string;
     limit?: string;
-    sortBy?: 'newest' | 'oldest';
+    sortBy?: "newest" | "oldest";
   };
   user?: {
     _id: ObjectId;

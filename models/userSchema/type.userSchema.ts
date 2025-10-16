@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface Photo {
   photo_id?: string;
@@ -13,6 +13,7 @@ export interface UserInterface {
   password: string;
   profilePhoto?: Photo;
   refreshToken?: string;
+  savedPosts?: Types.ObjectId[];
 }
 
 export interface UserDocument extends UserInterface, Document {

@@ -1,7 +1,5 @@
 import { Schema, model } from "mongoose";
 import * as bcrypt from "bcryptjs";
-import jwt, { SignOptions } from "jsonwebtoken";
-import envConfig from "../../config/env.config";
 import { UserDocument } from "./type.userSchema";
 
 const userSchema = new Schema<UserDocument>(
@@ -49,6 +47,13 @@ const userSchema = new Schema<UserDocument>(
     refreshToken: {
       type: String,
     },
+
+    savedPosts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -57,7 +62,7 @@ const userSchema = new Schema<UserDocument>(
 
 // bcrypt password
 userSchema.pre("save", async function (next) {
-  var user = this as UserDocument;
+  const user = this as UserDocument;
   if (!user.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(this.password, salt);

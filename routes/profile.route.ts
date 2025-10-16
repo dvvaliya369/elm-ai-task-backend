@@ -2,6 +2,9 @@ import express, { Router, RequestHandler } from "express";
 import {
   getProfile,
   updateProfile,
+  savePostToProfile,
+  removePostFromProfile,
+  getSavedPosts,
 } from "../controllers/profile.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
@@ -20,6 +23,13 @@ router.put(
   updateProfile
 );
 
+// Save post routes
+router.use("/save-post", authMiddleware);
+router.post("/save-post/:postId", savePostToProfile);
+router.delete("/save-post/:postId", removePostFromProfile);
 
+// Get saved posts
+router.use("/saved-posts", authMiddleware);
+router.get("/saved-posts", getSavedPosts);
 
 export default router;
