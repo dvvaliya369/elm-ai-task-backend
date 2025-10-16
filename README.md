@@ -107,6 +107,26 @@ yarn start
 
 ## 📚 API Documentation
 
+### Swagger Documentation
+
+The project includes comprehensive **Swagger API documentation** specifically for Post routes. Access the interactive documentation at:
+
+**URL:** `http://localhost:8000/api/docs/posts`
+
+**Features:**
+- Interactive API testing interface
+- Detailed request/response schemas
+- Authentication examples
+- Parameter descriptions
+- Error response documentation
+
+**What's Documented:**
+- All POST management endpoints
+- Comment system (including **comment liking feature**)
+- File upload specifications
+- Authentication requirements
+- Response formats and status codes
+
 ### Authentication Endpoints
 
 #### Register User
@@ -217,6 +237,24 @@ Content-Type: application/json
 }
 ```
 
+#### Like/Unlike Comment
+```http
+PUT /api/post/comment/:id/like/:commentId
+Authorization: Bearer <access-token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Comment like toggled successfully",
+  "data": {
+    "isLiked": true,
+    "likesCount": 5
+  }
+}
+```
+
 ### Profile Management
 
 #### Get Current User Profile
@@ -273,8 +311,32 @@ Form Data:
 - Advanced filtering and search capabilities
 - Pagination support
 - Like and comment functionality
+- **Comment Liking System**: Users can like/unlike individual comments on posts
 - Soft delete implementation
 - User interaction tracking (isLikedByUser, isCommentedByUser)
+
+### 💬 Comment Like Feature
+The application includes a comprehensive comment liking system:
+
+**Key Features:**
+- **Toggle Like/Unlike**: Users can like or unlike comments with a single endpoint
+- **Real-time Count**: Returns current like count and user's like status
+- **User Authentication**: Requires valid JWT token
+- **Cache Integration**: Automatically updates cache when comment likes change
+- **Database Consistency**: Uses MongoDB aggregation for accurate counting
+
+**How it Works:**
+1. User calls `PUT /api/post/comment/:postId/like/:commentId`
+2. System checks if user already liked the comment
+3. Toggles like status (add/remove like from comment's likes array)
+4. Returns updated like count and user's current like status
+5. Clears relevant cache entries to maintain data consistency
+
+**Use Cases:**
+- Social engagement on comment threads
+- User feedback on specific comments
+- Community interaction enhancement
+- Content quality indication
 
 ### 🚀 Redis Caching System
 - **Fast Data Access**: Cached data loads instantly without database queries
