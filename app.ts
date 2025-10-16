@@ -5,6 +5,8 @@ import "./config/env.config";
 import "./config/db.config";
 import "./config/redis.config";
 import express from "express";
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.config';
 import corsOption from "./config/cors.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
@@ -24,9 +26,16 @@ app.use(`/api/post`, Post);
 app.use(`/api/profile`, Profile);
 app.use(`/api/favorites`, Favorite);
 
+// Swagger Documentation - Only for Post Routes
+app.use('/api/docs/posts', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: false,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Post API Documentation'
+}));
+
 // default route
 app.get("/", (_req, res) => {
-  res.send("Hello World");
+  res.send("Hello World - API Documentation available at /api/docs/posts");
 });
 
 // Global error handler
