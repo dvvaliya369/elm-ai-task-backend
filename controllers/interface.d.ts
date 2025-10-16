@@ -304,3 +304,15 @@ export interface CheckFavoriteRequest extends Request {
     fullName?: string;
   };
 }
+
+export interface LikeCommentRequest extends Request {
+  params: {
+    id: string;
+    commentId: string;
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}

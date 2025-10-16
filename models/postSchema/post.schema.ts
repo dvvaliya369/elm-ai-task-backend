@@ -33,6 +33,7 @@ const commentSchema = new Schema(
       required: true,
       maxLength: [500, "Comment cannot exceed 500 characters"],
     },
+    likes: [likeSchema],
   },
   {
     timestamps: true,
@@ -161,6 +162,53 @@ postSchema.methods = {
     );
   },
 
+  toggleCommentLike: async function (
+    commentId: Types.ObjectId,
+    userId: Types.ObjectId,
+    userName: string
+  ) {
+    const comment = this.comments.id(commentId);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    const likeIndex = comment.likes.findIndex(
+      (like: any) => like.user.toString() === userId.toString()
+    );
+
+    if (likeIndex !== -1) {
+      comment.likes.splice(likeIndex, 1);
+    } else {
+      comment.likes.push({
+        user: userId,
+        name: userName,
+        createdAt: new Date(),
+      });
+    }
+
+    return await this.save();
+  },
+
+  isCommentLikedByUser: function (commentId: Types.ObjectId, userId: Types.ObjectId): boolean {
+    const comment = this.comments.id(commentId);
+    if (!comment) {
+      return false;
+    }
+
+    return comment.likes.some(
+      (like: any) => like.user.toString() === userId.toString()
+    );
+  },
+
+  getCommentLikesCount: function (commentId: Types.ObjectId): number {
+    const comment = this.comments.id(commentId);
+    if (!comment) {
+      return 0;
+    }
+
+    return comment.likes.length;
+  },
+
   getLikesCount: function (): number {
     return this.likes.length;
   },
@@ -174,5 +222,6 @@ postSchema.index({ user: 1, createdAt: -1 });
 postSchema.index({ createdAt: -1 });
 postSchema.index({ "likes.user": 1 });
 postSchema.index({ "comments.user": 1 });
+postSchema.index({ "comments.likes.user": 1 });
 
 export default model<PostDocument>("Post", postSchema);

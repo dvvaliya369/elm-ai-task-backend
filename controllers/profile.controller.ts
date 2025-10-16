@@ -251,8 +251,8 @@ export const getSavedPosts = asyncHandler<GetSavedPostsRequest, Response>(
     const hasPrevPage = pageNum > 1;
 
     const responseData = {
-      savedPosts: (savedPosts as unknown[]).map(
-        (post: Record<string, unknown>) => ({
+      savedPosts: (savedPosts as any[]).map(
+        (post: any) => ({
           _id: post._id,
           user: {
             _id: (post.user as Record<string, unknown>)._id,

@@ -15,6 +15,7 @@ import {
   GetPostByUserIdRequest,
   GetPostsRequest,
   LikePostRequest,
+  LikeCommentRequest,
   UpdatePostRequest,
 
 } from "./interface";
@@ -624,6 +625,45 @@ export const getPostByUserId = asyncHandler<GetPostByUserIdRequest, Response>(
       success: true,
       message: "Posts fetched successfully",
       data: responseData,
+    });
+  }
+);
+
+// Like comment
+export const likeComment = asyncHandler<LikeCommentRequest, Response>(
+  async (req, res) => {
+    const { id, commentId } = req.params;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError("User not authenticated", 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    await post.toggleCommentLike(
+      new mongoose.Types.ObjectId(commentId), 
+      user._id, 
+      user.fullName || ""
+    );
+
+    const postCacheKey = cacheService.generatePostKey(id);
+    const userPostsPattern = cacheService.generateUserPostsPattern(
+      post.user.toString()
+    );
+    await cacheService.delete(postCacheKey);
+    await cacheService.deletePattern(userPostsPattern);
+
+    return res.status(200).json({
+      success: true,
+      message: "Comment like toggled successfully",
+      data: {
+        isLiked: post.isCommentLikedByUser(new mongoose.Types.ObjectId(commentId), user._id),
+        likesCount: post.getCommentLikesCount(new mongoose.Types.ObjectId(commentId)),
+      },
     });
   }
 );

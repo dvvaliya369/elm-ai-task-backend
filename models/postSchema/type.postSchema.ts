@@ -22,6 +22,7 @@ export interface Comment {
   user: Types.ObjectId;
   name: string;
   comment: string;
+  likes: Like[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,6 +44,9 @@ export interface PostDocument extends PostInterface, Document {
   toggleLike(userId: Types.ObjectId, userName: string): Promise<PostDocument>;
   addComment(userId: Types.ObjectId, userName: string, commentText: string): Promise<PostDocument>;
   removeComment(commentId: Types.ObjectId, userId: Types.ObjectId): Promise<PostDocument>;
+  toggleCommentLike(commentId: Types.ObjectId, userId: Types.ObjectId, userName: string): Promise<PostDocument>;
+  isCommentLikedByUser(commentId: Types.ObjectId, userId: Types.ObjectId): boolean;
+  getCommentLikesCount(commentId: Types.ObjectId): number;
   isLikedByUserMethod(userId: Types.ObjectId): boolean;
   isCommentedByUserMethod(userId: Types.ObjectId): boolean;
   getLikesCount(): number;
