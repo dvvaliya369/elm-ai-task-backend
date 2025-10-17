@@ -52,6 +52,7 @@ app.get("/", (_req, res) => {
       <div style="margin: 20px 0;">
         <a href="/api/auth/google" style="margin: 10px; padding: 10px 20px; background-color: #db4437; color: white; text-decoration: none; border-radius: 5px;">Login with Google</a>
         <a href="/api/auth/github" style="margin: 10px; padding: 10px 20px; background-color: #333; color: white; text-decoration: none; border-radius: 5px;">Login with GitHub</a>
+        <a href="/api/auth/facebook" style="margin: 10px; padding: 10px 20px; background-color: #3b5998; color: white; text-decoration: none; border-radius: 5px;">Login with Facebook</a>
       </div>
     </div>
   `);

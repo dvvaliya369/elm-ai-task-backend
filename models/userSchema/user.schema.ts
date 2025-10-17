@@ -31,7 +31,7 @@ const userSchema = new Schema<UserDocument>(
       type: String,
       minLength: [4, "Password must be at least 4 character long"],
       required: function(this: UserDocument) {
-        return !this.googleId && !this.githubId; // Password not required for OAuth users
+        return !this.googleId && !this.githubId && !this.facebookId; // Password not required for OAuth users
       },
       trim: true,
     },
@@ -43,6 +43,12 @@ const userSchema = new Schema<UserDocument>(
     },
 
     githubId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null values to be non-unique
+    },
+
+    facebookId: {
       type: String,
       unique: true,
       sparse: true, // Allows null values to be non-unique

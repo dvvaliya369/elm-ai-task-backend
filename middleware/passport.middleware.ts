@@ -68,6 +68,22 @@ export const authenticateGitHubCallback = (req: Request, res: Response, next: Ne
   })(req, res, next);
 };
 
+// Middleware to authenticate using Facebook OAuth strategy
+export const authenticateFacebook = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('facebook', { 
+    scope: ['email'],
+    session: true
+  })(req, res, next);
+};
+
+// Middleware to handle Facebook OAuth callback
+export const authenticateFacebookCallback = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('facebook', { 
+    failureRedirect: '/auth/facebook/failure',
+    session: true
+  })(req, res, next);
+};
+
 // Initialize passport middleware
 export const initializePassport = () => {
   return passport.initialize();

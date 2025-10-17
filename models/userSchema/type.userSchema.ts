@@ -15,6 +15,7 @@ export interface UserInterface {
   refreshToken?: string;
   googleId?: string;
   githubId?: string;
+  facebookId?: string;
   provider?: string;
 }
 

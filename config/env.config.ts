@@ -20,6 +20,11 @@ export default {
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
 
+  // Facebook OAuth configuration
+  FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
+  FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET,
+  FACEBOOK_CALLBACK_URL: process.env.FACEBOOK_CALLBACK_URL || '/auth/facebook/callback',
+
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 

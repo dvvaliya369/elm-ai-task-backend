@@ -8,14 +8,18 @@ import {
   googleAuthSuccess, 
   googleAuthFailure,
   githubAuthSuccess,
-  githubAuthFailure
+  githubAuthFailure,
+  facebookAuthSuccess,
+  facebookAuthFailure
 } from "../controllers/auth.controller.passport";
 import { 
   authenticateJWT, 
   authenticateGoogle, 
   authenticateGoogleCallback,
   authenticateGitHub,
-  authenticateGitHubCallback
+  authenticateGitHubCallback,
+  authenticateFacebook,
+  authenticateFacebookCallback
 } from "../middleware/passport.middleware";
 
 const router: Router = express.Router();
@@ -36,5 +40,10 @@ router.get("/google/failure", googleAuthFailure);
 router.get("/github", authenticateGitHub);
 router.get("/github/callback", authenticateGitHubCallback, githubAuthSuccess);
 router.get("/github/failure", githubAuthFailure);
+
+// Facebook OAuth routes
+router.get("/facebook", authenticateFacebook);
+router.get("/facebook/callback", authenticateFacebookCallback, facebookAuthSuccess);
+router.get("/facebook/failure", facebookAuthFailure);
 
 export default router;
