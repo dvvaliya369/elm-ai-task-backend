@@ -10,13 +10,14 @@ import {
   deleteComment,
   getPostByUserId,
 } from "../controllers/post.controller";
-import { authMiddleware, authOptionalMiddleware } from "../middleware/auth.middleware";
+import { authenticateJWT } from "../middleware/passport.middleware";
+import { authOptionalMiddleware } from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
 import { handleMulterError } from "../middleware/multerError.middleware";
 
 const router: Router = express.Router();
 
-router.use("/create", authMiddleware);
+router.use("/create", authenticateJWT);
 router.post(
   "/create",
   upload.single("file") as unknown as RequestHandler,
@@ -24,7 +25,7 @@ router.post(
   createPost
 );
 
-router.use("/update", authMiddleware);
+router.use("/update", authenticateJWT);
 router.put(
   "/update/:id",
   upload.single("file") as unknown as RequestHandler,
@@ -32,13 +33,13 @@ router.put(
   updatePost
 );
 
-router.use("/delete", authMiddleware);
+router.use("/delete", authenticateJWT);
 router.delete("/delete/:id", deletePost);
 
-router.use("/like", authMiddleware);
+router.use("/like", authenticateJWT);
 router.put("/like/:id", likePost);
 
-router.use("/comment", authMiddleware);
+router.use("/comment", authenticateJWT);
 router.put("/comment/:id", commentPost);
 router.delete("/comment/:id", deleteComment);
 

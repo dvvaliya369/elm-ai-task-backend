@@ -3,16 +3,16 @@ import {
   getProfile,
   updateProfile,
 } from "../controllers/profile.controller";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { authenticateJWT } from "../middleware/passport.middleware";
 import { upload } from "../middleware/upload.middleware";
 import { handleMulterError } from "../middleware/multerError.middleware";
 
 const router: Router = express.Router();
 
-router.get("/me", authMiddleware, getProfile);
+router.get("/me", authenticateJWT, getProfile);
 router.get("/:id", getProfile);
 
-router.use("/update", authMiddleware);
+router.use("/update", authenticateJWT);
 router.put(
   "/update",
   upload.single("file") as unknown as RequestHandler,
