@@ -6,12 +6,16 @@ import {
   changePassword, 
   logout, 
   googleAuthSuccess, 
-  googleAuthFailure 
+  googleAuthFailure,
+  githubAuthSuccess,
+  githubAuthFailure
 } from "../controllers/auth.controller.passport";
 import { 
   authenticateJWT, 
   authenticateGoogle, 
-  authenticateGoogleCallback 
+  authenticateGoogleCallback,
+  authenticateGitHub,
+  authenticateGitHubCallback
 } from "../middleware/passport.middleware";
 
 const router: Router = express.Router();
@@ -27,5 +31,10 @@ router.post("/logout", authenticateJWT, logout);
 router.get("/google", authenticateGoogle);
 router.get("/google/callback", authenticateGoogleCallback, googleAuthSuccess);
 router.get("/google/failure", googleAuthFailure);
+
+// GitHub OAuth routes
+router.get("/github", authenticateGitHub);
+router.get("/github/callback", authenticateGitHubCallback, githubAuthSuccess);
+router.get("/github/failure", githubAuthFailure);
 
 export default router;

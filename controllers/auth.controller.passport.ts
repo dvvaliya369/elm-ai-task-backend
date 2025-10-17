@@ -228,6 +228,65 @@ export const googleAuthFailure = asyncHandler<any, Response>(
   }
 );
 
+// GitHub OAuth Success Handler
+export const githubAuthSuccess = asyncHandler<any, Response>(
+  async (req, res) => {
+    const user = req.user as UserDocument;
+
+    if (!user) {
+      throw new AppError("Authentication failed", 401);
+    }
+
+    const tokenPayload: TokenPayload = {
+      _id: user._id?.toString(),
+      email: user.email,
+      fullName: user.fullName,
+    };
+
+    const tokens = tokenService.generateTokenPair(tokenPayload);
+
+    user.refreshToken = tokens.refreshToken;
+    await user.save();
+
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePhoto: user.profilePhoto,
+      provider: user.provider,
+    };
+
+    // Login user in session
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.warn('Session login failed:', loginErr);
+      }
+    });
+
+    // In production, you might want to redirect to your frontend with tokens
+    // For now, returning JSON response
+    return res.status(200).json({
+      success: true,
+      message: "GitHub authentication successful",
+      data: {
+        user: userData,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
+    });
+  }
+);
+
+// GitHub OAuth Failure Handler
+export const githubAuthFailure = asyncHandler<any, Response>(
+  async (req, res) => {
+    return res.status(401).json({
+      success: false,
+      message: "GitHub authentication failed",
+    });
+  }
+);
+
 // Passport.js logout endpoint
 export const logout = asyncHandler<any, Response>(
   async (req, res) => {

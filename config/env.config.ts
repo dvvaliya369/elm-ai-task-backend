@@ -15,6 +15,11 @@ export default {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
 
+  // GitHub OAuth configuration
+  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
+
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 

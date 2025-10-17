@@ -44,7 +44,17 @@ app.use(`/api/profile`, Profile);
 
 // default route
 app.get("/", (_req, res) => {
-  res.send("Hello World - Google Login with Passport.js Authentication");
+  res.send(`
+    <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+      <h1>Welcome to ELM AI Task Backend</h1>
+      <h2>Authentication with Passport.js</h2>
+      <p>Available OAuth Providers:</p>
+      <div style="margin: 20px 0;">
+        <a href="/api/auth/google" style="margin: 10px; padding: 10px 20px; background-color: #db4437; color: white; text-decoration: none; border-radius: 5px;">Login with Google</a>
+        <a href="/api/auth/github" style="margin: 10px; padding: 10px 20px; background-color: #333; color: white; text-decoration: none; border-radius: 5px;">Login with GitHub</a>
+      </div>
+    </div>
+  `);
 });
 
 // Global error handler

@@ -52,6 +52,22 @@ export const authenticateGoogleCallback = (req: Request, res: Response, next: Ne
   })(req, res, next);
 };
 
+// Middleware to authenticate using GitHub OAuth strategy
+export const authenticateGitHub = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('github', { 
+    scope: ['user:email'],
+    session: true
+  })(req, res, next);
+};
+
+// Middleware to handle GitHub OAuth callback
+export const authenticateGitHubCallback = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('github', { 
+    failureRedirect: '/auth/github/failure',
+    session: true
+  })(req, res, next);
+};
+
 // Initialize passport middleware
 export const initializePassport = () => {
   return passport.initialize();

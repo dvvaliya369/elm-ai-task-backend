@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as GitHubStrategy } from 'passport-github2';
 import bcryptjs from 'bcryptjs';
 import User from '../models/userSchema/user.schema';
 import { UserDocument } from '../models/userSchema/type.userSchema';
@@ -94,6 +95,57 @@ passport.use(new GoogleStrategy(
         provider: 'google',
         profilePhoto: {
           photo_url: profile.photos[0].value
+        }
+      });
+      
+      await newUser.save();
+      return done(null, newUser);
+    } catch (error) {
+      return done(error, null);
+    }
+  }
+));
+
+// GitHub OAuth Strategy
+passport.use(new GitHubStrategy(
+  {
+    clientID: envConfig.GITHUB_CLIENT_ID!,
+    clientSecret: envConfig.GITHUB_CLIENT_SECRET!,
+    callbackURL: envConfig.GITHUB_CALLBACK_URL
+  },
+  async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+    try {
+      // Check if user already exists with this GitHub ID
+      let user = await User.findOne({ githubId: profile.id });
+      
+      if (user) {
+        return done(null, user);
+      }
+      
+      // Check if user already exists with this email
+      const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
+      
+      if (email) {
+        user = await User.findOne({ email: email });
+        
+        if (user) {
+          // Link GitHub account to existing user
+          user.githubId = profile.id;
+          user.provider = 'github';
+          await user.save();
+          return done(null, user);
+        }
+      }
+      
+      // Create new user
+      const newUser = new User({
+        githubId: profile.id,
+        firstName: profile.displayName ? profile.displayName.split(' ')[0] : profile.username,
+        lastName: profile.displayName ? profile.displayName.split(' ').slice(1).join(' ') : '',
+        email: email || `${profile.username}@github.local`, // GitHub might not provide email
+        provider: 'github',
+        profilePhoto: {
+          photo_url: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null
         }
       });
       

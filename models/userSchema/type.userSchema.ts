@@ -14,6 +14,7 @@ export interface UserInterface {
   profilePhoto?: Photo;
   refreshToken?: string;
   googleId?: string;
+  githubId?: string;
   provider?: string;
 }
 
