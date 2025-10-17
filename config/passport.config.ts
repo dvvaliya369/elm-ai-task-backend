@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import bcryptjs from 'bcryptjs';
 import User from '../models/userSchema/user.schema';
 import { UserDocument } from '../models/userSchema/type.userSchema';
@@ -53,6 +54,53 @@ passport.use(new JwtStrategy(
       }
     } catch (error) {
       return done(error, false);
+    }
+  }
+));
+
+// Google OAuth Strategy
+passport.use(new GoogleStrategy(
+  {
+    clientID: envConfig.GOOGLE_CLIENT_ID!,
+    clientSecret: envConfig.GOOGLE_CLIENT_SECRET!,
+    callbackURL: envConfig.GOOGLE_CALLBACK_URL
+  },
+  async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+    try {
+      // Check if user already exists with this Google ID
+      let user = await User.findOne({ googleId: profile.id });
+      
+      if (user) {
+        return done(null, user);
+      }
+      
+      // Check if user already exists with this email
+      user = await User.findOne({ email: profile.emails[0].value });
+      
+      if (user) {
+        // Link Google account to existing user
+        user.googleId = profile.id;
+        user.provider = 'google';
+        await user.save();
+        return done(null, user);
+      }
+      
+      // Create new user
+      const newUser = new User({
+        googleId: profile.id,
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName,
+        email: profile.emails[0].value,
+        provider: 'google',
+        profilePhoto: {
+          photo_url: profile.photos[0].value
+        }
+      });
+      
+      await newUser.save();
+      return done(null, newUser);
+    } catch (error) {
+      return done(error, null);
     }
   }
 ));

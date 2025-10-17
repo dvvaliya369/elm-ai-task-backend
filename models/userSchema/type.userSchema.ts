@@ -10,9 +10,11 @@ export interface UserInterface {
   firstName?: string;
   lastName?: string;
   email: string;
-  password: string;
+  password?: string;
   profilePhoto?: Photo;
   refreshToken?: string;
+  googleId?: string;
+  provider?: string;
 }
 
 export interface UserDocument extends UserInterface, Document {

@@ -36,6 +36,22 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
   })(req, res, next);
 };
 
+// Middleware to authenticate using Google OAuth strategy
+export const authenticateGoogle = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    session: true
+  })(req, res, next);
+};
+
+// Middleware to handle Google OAuth callback
+export const authenticateGoogleCallback = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('google', { 
+    failureRedirect: '/auth/google/failure',
+    session: true
+  })(req, res, next);
+};
+
 // Initialize passport middleware
 export const initializePassport = () => {
   return passport.initialize();

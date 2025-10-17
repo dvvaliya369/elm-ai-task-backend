@@ -30,8 +30,21 @@ const userSchema = new Schema<UserDocument>(
     password: {
       type: String,
       minLength: [4, "Password must be at least 4 character long"],
-      required: [true, "Password is required"],
+      required: function(this: UserDocument) {
+        return !this.googleId; // Password not required for Google OAuth users
+      },
       trim: true,
+    },
+
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null values to be non-unique
+    },
+
+    provider: {
+      type: String,
+      default: 'local',
     },
 
     profilePhoto: {
@@ -58,7 +71,8 @@ const userSchema = new Schema<UserDocument>(
 // bcrypt password
 userSchema.pre("save", async function (next) {
   var user = this as UserDocument;
-  if (!user.isModified("password")) return next();
+  // Only hash password if it exists and is modified
+  if (!user.password || !user.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(this.password, salt);
   this.password = hash;
@@ -72,6 +86,7 @@ userSchema.virtual("fullName").get(function (this: UserDocument) {
 
 userSchema.methods = {
   comparePassword: async function (providedPassword: string): Promise<boolean> {
+    if (!this.password) return false;
     return await bcrypt.compare(providedPassword, this.password);
   },
 };

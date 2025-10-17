@@ -7,10 +7,10 @@ import "./config/db.config";
 import "./config/redis.config";
 import express from "express";
 import corsOption from "./config/cors.config";
-import { initializePassport, passportSession } from "./middleware/passport.enhanced";
+import { initializePassport, passportSession } from "./middleware/passport.middleware";
 
-// Routes - using enhanced Passport.js routes
-import AuthEnhanced from "./routes/auth.route.enhanced";
+// Routes - using Passport.js routes
+import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
 import envConfig from "./config/env.config";
@@ -38,13 +38,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes Middleware
-app.use(`/api/auth`, AuthEnhanced);
+app.use(`/api/auth`, Auth);
 app.use(`/api/post`, Post);
 app.use(`/api/profile`, Profile);
 
 // default route
 app.get("/", (_req, res) => {
-  res.send("Hello World - Enhanced with Passport.js Authentication");
+  res.send("Hello World - Google Login with Passport.js Authentication");
 });
 
 // Global error handler

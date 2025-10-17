@@ -9,6 +9,11 @@ export default {
   DB_URL: process.env.DB_URL,
   DOMAIN: process.env.DOMAIN as string,
   SESSION_SECRET: process.env.SESSION_SECRET || 'fallback-secret-key', // Added for session management
+  
+  // Google OAuth configuration
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
 
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
