@@ -1,0 +1,52 @@
+{{> header title="Verify Your Email Address"}}
+
+<div class="content">
+    <h2>Verify Your Email Address</h2>
+    
+    <p>Hello {{name}},</p>
+    
+    <p>Thank you for signing up for ELM AI Task! To complete your registration and secure your account, please verify your email address by clicking the button below:</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{verificationLink}}" class="button">Verify Email Address</a>
+    </div>
+    
+    <div class="highlight">
+        <strong>Why verify your email?</strong><br>
+        Email verification helps us:
+        <ul>
+            <li>Ensure account security</li>
+            <li>Send you important account notifications</li>
+            <li>Help you recover your account if needed</li>
+            <li>Prevent unauthorized access</li>
+        </ul>
+    </div>
+    
+    <p>If the button above doesn't work, you can copy and paste the following link into your browser:</p>
+    <p style="word-break: break-all; background-color: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace;">
+        {{verificationLink}}
+    </p>
+    
+    <h3>What happens after verification?</h3>
+    <p>Once you verify your email, you'll be able to:</p>
+    <ul>
+        <li>✅ Access all ELM AI Task features</li>
+        <li>✅ Receive important account notifications</li>
+        <li>✅ Reset your password if needed</li>
+        <li>✅ Join team workspaces and collaborate</li>
+    </ul>
+    
+    <div class="warning">
+        <strong>Didn't sign up for ELM AI Task?</strong><br>
+        If you received this email by mistake, you can safely ignore it. No account will be created without email verification.
+    </div>
+    
+    <p>If you're having trouble with the verification link or have any questions, please don't hesitate to contact our support team.</p>
+    
+    <p>Welcome to ELM AI Task!</p>
+    
+    <p>Best regards,<br>
+    The ELM AI Task Team</p>
+</div>
+
+{{> footer currentDate=(new Date) unsubscribeUrl=unsubscribeUrl}}

@@ -1,0 +1,39 @@
+{{> header title="Welcome to ELM AI Task"}}
+
+<div class="content">
+    <h2>Welcome, {{name}}! 🎉</h2>
+    
+    <p>Thank you for joining ELM AI Task! We're excited to have you on board and help you manage your tasks more efficiently with the power of AI.</p>
+    
+    <div class="success">
+        <strong>Your account has been successfully created!</strong><br>
+        Email: {{email}}
+    </div>
+    
+    <h3>What's Next?</h3>
+    <ul>
+        <li>Complete your profile setup</li>
+        <li>Create your first AI-powered task</li>
+        <li>Explore our intelligent task management features</li>
+        <li>Connect with team members and collaborate</li>
+    </ul>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{dashboardUrl}}" class="button">Get Started Now</a>
+    </div>
+    
+    <h3>Need Help?</h3>
+    <p>If you have any questions or need assistance getting started, our support team is here to help:</p>
+    <ul>
+        <li>📧 Email us at <a href="mailto:support@elmaitask.com">support@elmaitask.com</a></li>
+        <li>📚 Check out our <a href="{{helpUrl}}">Help Center</a></li>
+        <li>💬 Join our <a href="{{communityUrl}}">Community Forum</a></li>
+    </ul>
+    
+    <p>Welcome aboard, and happy task managing!</p>
+    
+    <p>Best regards,<br>
+    The ELM AI Task Team</p>
+</div>
+
+{{> footer currentDate=(new Date) unsubscribeUrl=unsubscribeUrl}}

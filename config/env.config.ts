@@ -11,5 +11,14 @@ export default {
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 
+  // Email Configuration
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: process.env.SMTP_PORT || 587,
+  SMTP_SECURE: process.env.SMTP_SECURE === 'true',
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASS: process.env.SMTP_PASS,
+  FROM_EMAIL: process.env.FROM_EMAIL,
+  FROM_NAME: process.env.FROM_NAME || 'ELM AI Task',
+
   // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };
