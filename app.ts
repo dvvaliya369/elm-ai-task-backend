@@ -12,6 +12,7 @@ import Profile from "./routes/profile.route";
 
 
 const app = express();
+
 // Middleware
 app.use(cors(corsOption));
 app.use(express.json());
