@@ -17,5 +17,13 @@ export default {
   GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL || '/api/auth/github/callback',
   SESSION_SECRET: process.env.SESSION_SECRET,
 
+  // Email Configuration
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PORT: parseInt(process.env.EMAIL_PORT || '587'),
+  EMAIL_SECURE: process.env.EMAIL_SECURE === 'true',
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+  EMAIL_FROM: process.env.EMAIL_FROM,
+
   // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };

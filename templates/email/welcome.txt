@@ -1,0 +1,21 @@
+Welcome to ELM AI Task!
+
+Hello {{firstName}} {{lastName}}!
+
+Thank you for joining our community. We're excited to have you on board!
+
+Your Account Details:
+- Name: {{firstName}} {{lastName}}
+- Email: {{email}}
+- Account Created: {{createdAt}}
+
+You can now start creating posts, connecting with other users, and exploring all the features we have to offer.
+
+Visit our app: {{appUrl}}
+
+If you have any questions or need help getting started, feel free to reach out to our support team.
+
+Best regards,
+The ELM AI Task Team
+
+This email was sent to {{email}}. If you didn't create an account, please ignore this email.

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to ELM AI Task</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to ELM AI Task! 🎉</h1>
+        </div>
+        <div class="content">
+            <div class="welcome-message">
+                <h2>Hello {{firstName}} {{lastName}}! 👋</h2>
+                <p>Thank you for joining our community. We're excited to have you on board!</p>
+            </div>
+            
+            <div class="user-info">
+                <h3>Your Account Details:</h3>
+                <p><strong>Name:</strong> {{firstName}} {{lastName}}</p>
+                <p><strong>Email:</strong> {{email}}</p>
+                <p><strong>Account Created:</strong> {{createdAt}}</p>
+            </div>
+
+            <p>You can now start creating posts, connecting with other users, and exploring all the features we have to offer.</p>
+
+            <a href="{{appUrl}}" class="cta-button">Get Started</a>
+
+            <p>If you have any questions or need help getting started, feel free to reach out to our support team.</p>
+        </div>
+        <div class="footer">
+            <p>Best regards,<br>The ELM AI Task Team</p>
+            <p>This email was sent to {{email}}. If you didn't create an account, please ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>
