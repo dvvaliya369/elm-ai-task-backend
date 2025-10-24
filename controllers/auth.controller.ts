@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 
 import {
   UserDocument,
@@ -163,5 +163,42 @@ export const changePassword = asyncHandler<IChangePasswordRequest, Response>(
       success: true,
       message: "Password changed successfully",
     });
+  }
+);
+
+// GitHub OAuth callback handler
+export const githubCallback = asyncHandler<Request, Response>(
+  async (req, res) => {
+    const user = req.user as UserDocument;
+
+    if (!user) {
+      throw new AppError("Authentication failed", 401);
+    }
+
+    const tokenPayload: TokenPayload = {
+      _id: user._id?.toString(),
+      email: user.email,
+      fullName: user.fullName,
+    };
+
+    const tokens = tokenService.generateTokenPair(tokenPayload);
+
+    user.refreshToken = tokens.refreshToken;
+    await user.save();
+
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePhoto: user.profilePhoto,
+      oauthProvider: user.oauthProvider,
+    };
+
+    // Redirect to frontend with tokens
+    // You can customize this URL based on your frontend setup
+    const frontendURL = process.env.FRONTEND_URL || "http://localhost:3000";
+    const redirectURL = `${frontendURL}/auth/callback?token=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+
+    return res.redirect(redirectURL);
   }
 );

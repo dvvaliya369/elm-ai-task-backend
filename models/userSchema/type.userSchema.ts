@@ -10,9 +10,12 @@ export interface UserInterface {
   firstName?: string;
   lastName?: string;
   email: string;
-  password: string;
+  password?: string;
   profilePhoto?: Photo;
   refreshToken?: string;
+  // OAuth fields
+  githubId?: string;
+  oauthProvider?: "github" | "local";
 }
 
 export interface UserDocument extends UserInterface, Document {

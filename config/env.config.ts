@@ -11,5 +11,11 @@ export default {
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 
+  // GitHub OAuth
+  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
+  SESSION_SECRET: process.env.SESSION_SECRET || "your-session-secret",
+
   // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };

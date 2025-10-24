@@ -5,10 +5,13 @@ import "./config/env.config";
 import "./config/db.config";
 import "./config/redis.config";
 import express from "express";
+import session from "express-session";
 import corsOption from "./config/cors.config";
+import passport from "./config/passport.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
+import envConfig from "./config/env.config";
 
 
 const app = express();
@@ -16,6 +19,23 @@ const app = express();
 app.use(cors(corsOption));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session configuration for Passport
+app.use(
+  session({
+    secret: envConfig.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes Middleware
 app.use(`/api/auth`, Auth);

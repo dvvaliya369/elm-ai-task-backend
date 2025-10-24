@@ -30,7 +30,9 @@ const userSchema = new Schema<UserDocument>(
     password: {
       type: String,
       minLength: [4, "Password must be at least 4 character long"],
-      required: [true, "Password is required"],
+      required: function (this: UserDocument) {
+        return this.oauthProvider === "local" || !this.oauthProvider;
+      },
       trim: true,
     },
 
@@ -49,6 +51,19 @@ const userSchema = new Schema<UserDocument>(
     refreshToken: {
       type: String,
     },
+
+    // OAuth fields
+    githubId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
+
+    oauthProvider: {
+      type: String,
+      enum: ["github", "local"],
+      default: "local",
+    },
   },
   {
     timestamps: true,
@@ -59,6 +74,8 @@ const userSchema = new Schema<UserDocument>(
 userSchema.pre("save", async function (next) {
   var user = this as UserDocument;
   if (!user.isModified("password")) return next();
+  // Skip hashing if no password (OAuth users)
+  if (!this.password) return next();
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(this.password, salt);
   this.password = hash;
