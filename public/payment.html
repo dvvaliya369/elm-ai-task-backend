@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Payment Integration</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .payment-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #3f51b5;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #303f9f;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .transaction-history {
+            margin-top: 30px;
+        }
+        .transaction-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Razorpay Payment Integration</h1>
+        
+        <!-- Login Form -->
+        <div id="login-section">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <!-- Payment Form -->
+        <div id="payment-section" style="display: none;">
+            <h2>Make Payment</h2>
+            <div class="form-group">
+                <label for="amount">Amount (₹):</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" placeholder="Payment description">
+            </div>
+            <button onclick="createOrder()" id="pay-button">Pay Now</button>
+            
+            <div class="loading" id="loading">
+                <p>Processing payment...</p>
+            </div>
+            
+            <div class="result" id="result">
+                <p id="result-message"></p>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div id="transactions-section" style="display: none;">
+            <div class="transaction-history">
+                <h2>Transaction History</h2>
+                <button onclick="loadTransactions()">Refresh Transactions</button>
+                <div id="transactions-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000/api'; // Update this with your API URL
+        let authToken = '';
+
+        // Login function
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showResult('Please enter email and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.data.token;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('payment-section').style.display = 'block';
+                    document.getElementById('transactions-section').style.display = 'block';
+                    showResult('Login successful!', 'success');
+                    loadTransactions();
+                } else {
+                    showResult(data.message || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showResult('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        // Create order and initiate payment
+        async function createOrder() {
+            const amount = document.getElementById('amount').value;
+            const description = document.getElementById('description').value;
+
+            if (!amount || amount <= 0) {
+                showResult('Please enter a valid amount', 'error');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify({
+                        amount: parseInt(amount),
+                        description,
+                        currency: 'INR',
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Initialize Razorpay checkout
+                    const options = {
+                        key: data.data.key, // Razorpay key from backend
+                        amount: data.data.amount, // Amount in paise
+                        currency: data.data.currency,
+                        order_id: data.data.orderId,
+                        name: 'Your Company Name',
+                        description: description || 'Payment for services',
+                        image: '/logo.png', // Your logo URL
+                        handler: function (response) {
+                            verifyPayment(response);
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                showResult('Payment cancelled', 'error');
+                                setLoading(false);
+                            }
+                        },
+                        prefill: {
+                            email: document.getElementById('email').value,
+                        },
+                        theme: {
+                            color: '#3f51b5'
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    showResult(data.message || 'Failed to create order', 'error');
+                }
+            } catch (error) {
+                showResult('Failed to create order: ' + error.message, 'error');
+            }
+
+            setLoading(false);
+        }
+
+        // Verify payment
+        async function verifyPayment(paymentResponse) {
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment/verify-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify(paymentResponse),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResult(`Payment successful! Transaction ID: ${data.data.transactionId}`, 'success');
+                    // Clear form
+                    document.getElementById('amount').value = '';
+                    document.getElementById('description').value = '';
+                    // Refresh transactions
+                    loadTransactions();
+                } else {
+                    showResult(data.message || 'Payment verification failed', 'error');
+                }
+            } catch (error) {
+                showResult('Payment verification failed: ' + error.message, 'error');
+            }
+
+            setLoading(false);
+        }
+
+        // Load transaction history
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payment/transactions`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayTransactions(data.data.transactions);
+                } else {
+                    console.error('Failed to load transactions:', data.message);
+                }
+            } catch (error) {
+                console.error('Failed to load transactions:', error.message);
+            }
+        }
+
+        // Display transactions
+        function displayTransactions(transactions) {
+            const transactionsList = document.getElementById('transactions-list');
+            
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = '<p>No transactions found.</p>';
+                return;
+            }
+
+            const transactionsHTML = transactions.map(transaction => `
+                <div class="transaction-item">
+                    <h4>Transaction ID: ${transaction.transactionId}</h4>
+                    <p><strong>Amount:</strong> ₹${transaction.amount}</p>
+                    <p><strong>Status:</strong> <span style="color: ${getStatusColor(transaction.status)}">${transaction.status.toUpperCase()}</span></p>
+                    <p><strong>Method:</strong> ${transaction.method || 'N/A'}</p>
+                    <p><strong>Date:</strong> ${new Date(transaction.createdAt).toLocaleString()}</p>
+                    ${transaction.paymentId ? `<p><strong>Payment ID:</strong> ${transaction.paymentId}</p>` : ''}
+                </div>
+            `).join('');
+
+            transactionsList.innerHTML = transactionsHTML;
+        }
+
+        // Get status color
+        function getStatusColor(status) {
+            switch (status) {
+                case 'paid': return 'green';
+                case 'failed': return 'red';
+                case 'created': return 'orange';
+                default: return 'black';
+            }
+        }
+
+        // Show result message
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            const resultMessage = document.getElementById('result-message');
+            
+            resultMessage.textContent = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                result.style.display = 'none';
+            }, 5000);
+        }
+
+        // Set loading state
+        function setLoading(loading) {
+            const loadingDiv = document.getElementById('loading');
+            const payButton = document.getElementById('pay-button');
+            
+            if (loading) {
+                loadingDiv.style.display = 'block';
+                payButton.disabled = true;
+                payButton.textContent = 'Processing...';
+            } else {
+                loadingDiv.style.display = 'none';
+                payButton.disabled = false;
+                payButton.textContent = 'Pay Now';
+            }
+        }
+    </script>
+</body>
+</html>
