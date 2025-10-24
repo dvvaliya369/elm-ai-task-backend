@@ -11,7 +11,9 @@
     "start": "node dist/index.js",
     "predev": "npm run build",
     "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\"",
-    "start:pm2": "pm2 start dist/index.js --name elmBackend"
+    "start:pm2": "pm2 start dist/index.js --name elmBackend",
+    "test:redis": "npx ts-node test/redis-performance-test.ts",
+    "test:performance": "npm run build && node dist/test/redis-performance-test.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -24,17 +26,22 @@
     "concurrently": "^8.0.1",
     "nodemon": "^3.1.10",
     "rimraf": "^5.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.4"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.17.0",
+    "@types/ioredis": "^4.28.10",
     "bcryptjs": "^2.4.3",
+    "bullmq": "^5.61.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.5",
     "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
     "redis": "^5.8.2",
     "uuid": "^11.1.0"
   }
