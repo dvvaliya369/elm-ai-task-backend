@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^7.17.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -35,7 +37,10 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.5",
     "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
     "redis": "^5.8.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0"
   }
 }

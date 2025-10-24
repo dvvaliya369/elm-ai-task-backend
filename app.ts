@@ -9,6 +9,8 @@ import corsOption from "./config/cors.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs, { swaggerDocsHandler } from './config/swagger.config';
 
 
 const app = express();
@@ -21,6 +23,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(`/api/auth`, Auth);
 app.use(`/api/post`, Post);
 app.use(`/api/profile`, Profile);
+
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Elm AI Task Backend API',
+}));
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', swaggerDocsHandler);
 
 // default route
 app.get("/", (_req, res) => {

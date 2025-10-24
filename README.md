@@ -12,6 +12,24 @@ A comprehensive social media backend API built with Node.js, Express, TypeScript
 - **Redis Caching** - Fast data retrieval for posts and profiles
 - **Advanced Filtering** - Search, pagination, and sorting capabilities
 - **Type Safety** - Full TypeScript implementation
+- **📚 Swagger Documentation** - Interactive API documentation with OpenAPI 3.0
+
+## 📚 API Documentation
+
+The project includes comprehensive Swagger/OpenAPI documentation for all endpoints:
+
+- **Swagger UI**: `http://localhost:3000/api-docs` (Interactive documentation)
+- **JSON Specification**: `http://localhost:3000/api-docs.json` (Raw OpenAPI spec)
+
+### Features of the API Documentation:
+- Interactive endpoint testing
+- JWT authentication support
+- Complete request/response schemas
+- File upload documentation
+- Error response examples
+- Organized by functional groups (Auth, Posts, Profile)
+
+For detailed documentation usage, see [SWAGGER_DOCS.md](./SWAGGER_DOCS.md)
 
 ## 📁 Project Structure
 
