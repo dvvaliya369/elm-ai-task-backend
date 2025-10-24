@@ -9,13 +9,27 @@ import corsOption from "./config/cors.config";
 import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
-
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.config";
 
 const app = express();
 // Middleware
 app.use(cors(corsOption));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Swagger Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "Social Media API Documentation",
+  customfavIcon: "https://swagger.io/favicon.ico",
+}));
+
+// Swagger JSON endpoint
+app.get("/api-docs.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 // Routes Middleware
 app.use(`/api/auth`, Auth);

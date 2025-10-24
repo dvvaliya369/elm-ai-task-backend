@@ -11,6 +11,7 @@ A comprehensive social media backend API built with Node.js, Express, TypeScript
 - **Profile Management** - User profile updates with photo uploads
 - **Redis Caching** - Fast data retrieval for posts and profiles
 - **Advanced Filtering** - Search, pagination, and sorting capabilities
+- **API Documentation** - Interactive Swagger/OpenAPI documentation
 - **Type Safety** - Full TypeScript implementation
 
 ## 📁 Project Structure
@@ -20,7 +21,9 @@ elm-ai-task-backend/
 ├── config/
 │   ├── db.config.ts          # MongoDB connection configuration
 │   ├── redis.config.ts       # Redis connection configuration
-│   └── env.config.ts         # Environment variables configuration
+│   ├── env.config.ts         # Environment variables configuration
+│   ├── cors.config.ts        # CORS configuration
+│   └── swagger.config.ts     # Swagger/OpenAPI configuration
 ├── controllers/
 │   ├── auth.controller.ts    # Authentication endpoints
 │   ├── post.controller.ts    # Post management endpoints
@@ -106,6 +109,44 @@ yarn start
 ```
 
 ## 📚 API Documentation
+
+### 📖 Interactive Swagger Documentation
+
+The API comes with comprehensive **Swagger/OpenAPI documentation** that allows you to explore and test all endpoints interactively.
+
+#### Accessing Swagger UI
+
+Once the server is running, access the Swagger documentation at:
+
+```
+http://localhost:8000/api-docs
+```
+
+#### Features:
+- **Interactive Testing**: Test all API endpoints directly from the browser
+- **Authentication Support**: Authorize with JWT tokens to test protected endpoints
+- **Request/Response Examples**: See detailed examples for all endpoints
+- **Schema Definitions**: View all data models and structures
+- **Try It Out**: Execute real API calls and see live responses
+
+#### Using Swagger UI:
+1. Open `http://localhost:8000/api-docs` in your browser
+2. Browse through the available endpoints organized by tags (Authentication, Posts, Profiles)
+3. Click on any endpoint to see detailed information
+4. For protected endpoints:
+   - First, use the `/api/auth/login` or `/api/auth/signup` endpoint to get an access token
+   - Click the "Authorize" button (lock icon) at the top
+   - Enter your token in the format: `Bearer YOUR_ACCESS_TOKEN`
+   - Click "Authorize" to save
+5. Click "Try it out" on any endpoint to test it
+6. Fill in the required parameters and click "Execute"
+7. View the response below
+
+#### Swagger JSON:
+Access the raw OpenAPI specification at:
+```
+http://localhost:8000/api-docs.json
+```
 
 ### Authentication Endpoints
 
@@ -249,6 +290,7 @@ Form Data:
 - **Caching**: Redis for fast data retrieval
 - **Authentication**: JWT (JSON Web Tokens)
 - **File Upload**: Multer + Google Cloud Storage
+- **API Documentation**: Swagger/OpenAPI (swagger-jsdoc, swagger-ui-express)
 - **Validation**: Custom middleware and schema validation
 - **Error Handling**: Centralized async error handling
 
