@@ -11,5 +11,13 @@ export default {
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 
+  // Email Configuration
+  SMTP_HOST: process.env.SMTP_HOST || "smtp.gmail.com",
+  SMTP_PORT: process.env.SMTP_PORT || "587",
+  SMTP_USER: process.env.SMTP_USER || "",
+  SMTP_PASSWORD: process.env.SMTP_PASSWORD || "",
+  SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL || "",
+  SMTP_FROM_NAME: process.env.SMTP_FROM_NAME || "Your App",
+
   // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };

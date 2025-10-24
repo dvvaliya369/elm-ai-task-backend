@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email Address</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      background-color: #f4f4f4;
+      border-radius: 10px;
+      padding: 30px;
+    }
+    .header {
+      background-color: #9C27B0;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px 10px 0 0;
+    }
+    .content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 0 0 10px 10px;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 30px;
+      background-color: #9C27B0;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .info {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+      font-size: 12px;
+    }
+    .code {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Verify Your Email</h1>
+    </div>
+    <div class="content">
+      <h2>Hi {{userName}},</h2>
+      <p>Thank you for signing up for {{appName}}! We're excited to have you on board.</p>
+      <p>To complete your registration and start using all features, please verify your email address by clicking the button below:</p>
+      <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+      <p>Or copy and paste this link into your browser:</p>
+      <div class="code">{{verificationUrl}}</div>
+      <div class="info">
+        <strong>Why verify your email?</strong><br>
+        Verifying your email helps us ensure the security of your account and allows us to send you important updates.
+      </div>
+      <p>If you didn't create an account with {{appName}}, you can safely ignore this email.</p>
+      <p><strong>The {{appName}} Team</strong></p>
+    </div>
+    <div class="footer">
+      <p>&copy; {{year}} {{appName}}. All rights reserved.</p>
+      <p>This is an automated email, please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>
