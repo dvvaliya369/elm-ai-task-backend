@@ -1,4 +1,5 @@
-import { Response } from "express";
+import { Response, Request } from "express";
+import passport from 'passport';
 
 import {
   UserDocument,
@@ -162,6 +163,59 @@ export const changePassword = asyncHandler<IChangePasswordRequest, Response>(
     return res.status(200).json({
       success: true,
       message: "Password changed successfully",
+    });
+  }
+);
+
+// GitHub Authentication Success Handler
+export const githubAuthSuccess = asyncHandler<Request, Response>(
+  async (req, res) => {
+    const user = req.user as UserDocument;
+
+    if (!user) {
+      throw new AppError("Authentication failed", 401);
+    }
+
+    const tokenPayload: TokenPayload = {
+      _id: user._id?.toString(),
+      email: user.email,
+      fullName: user.fullName,
+    };
+
+    const tokens = tokenService.generateTokenPair(tokenPayload);
+
+    user.refreshToken = tokens.refreshToken;
+    await user.save();
+
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePhoto: user.profilePhoto,
+      githubUsername: user.githubUsername,
+      authProvider: user.authProvider,
+    };
+
+    // In a real application, you would redirect to frontend with tokens
+    // For now, we'll return JSON response
+    return res.status(200).json({
+      success: true,
+      message: "GitHub authentication successful",
+      data: {
+        user: userData,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
+    });
+  }
+);
+
+// GitHub Authentication Failure Handler
+export const githubAuthFailure = asyncHandler<Request, Response>(
+  async (req, res) => {
+    return res.status(401).json({
+      success: false,
+      message: "GitHub authentication failed",
     });
   }
 );

@@ -30,8 +30,24 @@ const userSchema = new Schema<UserDocument>(
     password: {
       type: String,
       minLength: [4, "Password must be at least 4 character long"],
-      required: [true, "Password is required"],
+      required: function() { return this.authProvider === 'local'; },
       trim: true,
+    },
+
+    githubId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    githubUsername: {
+      type: String,
+    },
+
+    authProvider: {
+      type: String,
+      enum: ['local', 'github'],
+      default: 'local',
     },
 
     profilePhoto: {
@@ -58,10 +74,10 @@ const userSchema = new Schema<UserDocument>(
 // bcrypt password
 userSchema.pre("save", async function (next) {
   var user = this as UserDocument;
-  if (!user.isModified("password")) return next();
+  if (!user.isModified("password") || !user.password) return next();
   const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(this.password, salt);
-  this.password = hash;
+  const hash = await bcrypt.hash(user.password, salt);
+  user.password = hash;
   return next();
 });
 
@@ -72,6 +88,7 @@ userSchema.virtual("fullName").get(function (this: UserDocument) {
 
 userSchema.methods = {
   comparePassword: async function (providedPassword: string): Promise<boolean> {
+    if (!this.password) return false;
     return await bcrypt.compare(providedPassword, this.password);
   },
 };
