@@ -10,8 +10,16 @@ import Auth from "./routes/auth.route";
 import Post from "./routes/post.route";
 import Profile from "./routes/profile.route";
 
-
 const app = express();
+
+// Make Socket.IO instance available to routes if needed
+declare global {
+  namespace Express {
+    interface Request {
+      io?: any;
+    }
+  }
+}
 // Middleware
 app.use(cors(corsOption));
 app.use(express.json());
