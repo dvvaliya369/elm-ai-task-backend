@@ -14,6 +14,7 @@ import {
   IChangePasswordRequest,
 } from "./interface";
 import tokenService, { TokenPayload } from "../service/token.service";
+import emailService from "../service/email.service";
 
 export const signUp = asyncHandler<ISignUpRequest, Response>(
   async (req, res) => {
@@ -36,6 +37,15 @@ export const signUp = asyncHandler<ISignUpRequest, Response>(
     };
 
     await User.create(newUserData);
+
+    // Send welcome email (don't block the response if email fails)
+    try {
+      await emailService.sendWelcomeEmail(email, firstName, lastName);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Continue with successful signup response even if email fails
+    }
+
     res.status(201).json({
       success: true,
       message: message.SIGNUP_SUCCESS,

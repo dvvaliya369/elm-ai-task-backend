@@ -11,5 +11,15 @@ export default {
   GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || "",
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || "",
 
+  // Email Configuration
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: process.env.SMTP_PORT,
+  SMTP_SECURE: process.env.SMTP_SECURE,
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASS: process.env.SMTP_PASS,
+  EMAIL_FROM: process.env.EMAIL_FROM,
+  EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME,
+  FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
+
   // REDIS_URL: process.env.REDIS_URL // for redis cloud
 };

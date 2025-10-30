@@ -13,6 +13,11 @@ export interface UserInterface {
   password: string;
   profilePhoto?: Photo;
   refreshToken?: string;
+  emailVerified?: boolean;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 }
 
 export interface UserDocument extends UserInterface, Document {
