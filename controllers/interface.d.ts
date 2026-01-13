@@ -208,3 +208,37 @@ export interface GetPostByUserIdRequest extends Request {
     fullName?: string;
   };
 }
+
+/**
+ * Email routes interface
+ */
+export interface SendEmailRequest extends Request {
+  body: {
+    to: string | string[];
+    subject: string;
+    text?: string;
+    html?: string;
+    cc?: string | string[];
+    bcc?: string | string[];
+  };
+  user?: {
+    _id: ObjectId;
+    email: string;
+    fullName?: string;
+  };
+}
+
+export interface SendWelcomeEmailRequest extends Request {
+  body: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface SendPasswordResetEmailRequest extends Request {
+  body: {
+    email: string;
+    resetToken: string;
+  };
+}

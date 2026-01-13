@@ -11,6 +11,7 @@ A comprehensive social media backend API built with Node.js, Express, TypeScript
 - **Profile Management** - User profile updates with photo uploads
 - **Redis Caching** - Fast data retrieval for posts and profiles
 - **Advanced Filtering** - Search, pagination, and sorting capabilities
+- **Email Notifications** - Comprehensive email service with templates
 - **Type Safety** - Full TypeScript implementation
 
 ## 📁 Project Structure
@@ -45,9 +46,11 @@ elm-ai-task-backend/
 │   ├── asyncHandler.ts       # Async error handling utility
 │   ├── cache.service.ts      # Redis caching service
 │   ├── gcs.service.ts        # Google Cloud Storage service
+│   ├── email.service.ts      # Email sending service
 │   └── token.service.ts      # JWT token utilities
 ├── utils/
-│   └── fileUpload.ts         # File upload utilities
+│   ├── fileUpload.ts         # File upload utilities
+│   └── emailTemplates.ts     # Reusable email templates
 ├── app.ts                    # Express app configuration
 ├── server.ts                 # Server entry point
 └── elm-ai-469623-08f39025610f.json # GCS service account key
@@ -89,6 +92,14 @@ DOMAIN=http://localhost:8000
 
 GCS_PROJECT_ID=elm-ai-469623
 GCS_BUCKET_NAME=user_post
+
+# Email Configuration
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+EMAIL_FROM=noreply@elmaitask.com
 ```
 
 4. **Google Cloud Storage Setup**
@@ -217,6 +228,50 @@ Content-Type: application/json
 }
 ```
 
+### Email Endpoints
+
+#### Send Custom Email
+```http
+POST /api/email/send
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "to": "recipient@example.com",
+  "subject": "Your Subject Here",
+  "html": "<h1>Hello World</h1>",
+  "text": "Hello World"
+}
+```
+
+#### Send Welcome Email
+```http
+POST /api/email/welcome
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+#### Send Password Reset Email
+```http
+POST /api/email/password-reset
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "resetToken": "your-reset-token"
+}
+```
+
+#### Verify Email Service
+```http
+GET /api/email/verify
+```
+
 ### Profile Management
 
 #### Get Current User Profile
@@ -249,6 +304,7 @@ Form Data:
 - **Caching**: Redis for fast data retrieval
 - **Authentication**: JWT (JSON Web Tokens)
 - **File Upload**: Multer + Google Cloud Storage
+- **Email Service**: Nodemailer with SMTP support
 - **Validation**: Custom middleware and schema validation
 - **Error Handling**: Centralized async error handling
 
@@ -297,4 +353,30 @@ Form Data:
 - **Post Changes**: Cache clears when posts are created, updated, or deleted
 - **Interactions**: Cache clears when posts are liked or commented on
 - **Automatic**: Old cache expires automatically after set time
+
+### 📧 Email Service System
+- **SMTP Integration**: Uses Nodemailer with configurable SMTP settings
+- **Template Support**: Pre-built HTML email templates for common scenarios
+- **Multiple Recipients**: Support for To, CC, and BCC fields
+- **Attachments**: Send emails with file attachments
+- **Service Verification**: Built-in endpoint to verify email configuration
+
+#### 📨 Available Email Templates:
+- **Welcome Email**: Sent when new users sign up
+- **Password Reset**: Secure token-based password reset emails
+- **Password Changed**: Confirmation when password is updated
+- **Post Notifications**: Notifications for likes and comments
+- **Custom Emails**: Send fully customizable emails with HTML/text content
+
+#### ⚙️ Email Configuration:
+The email service supports any SMTP provider (Gmail, SendGrid, Mailgun, etc.):
+- Configurable host, port, and security settings
+- Automatic fallback if email service is not configured
+- Connection verification endpoint at `/api/email/verify`
+
+#### 🔐 Security Features:
+- Authentication required for custom email sending
+- Public endpoints for system-generated emails (welcome, password reset)
+- Validation of required fields before sending
+- Error handling with detailed logging
 
